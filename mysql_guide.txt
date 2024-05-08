@@ -1,10 +1,12 @@
 sudo systemctl status mysql
 sudo systemctl start mysql
 
-
+// for local mysql server
+mysql -u <USER> -p
 mysql -u root -p
 mysql -u def -p
-	// or
+
+// for aws rds mysql
 mysql -h <ENDPOINT> -P <PORT> -u <USERNAME> -p
 
 SELECT USER();
@@ -13,27 +15,10 @@ SELECT USER();
 SHOW databases;
 USE emotionsAI_DB;
 SHOW TABLES;
-DESCRIBE Diary;
-
+DESC diary;
 
 DROP TABLE Diary;
 
-
-CREATE TABLE Diary (
-    diaryId INT PRIMARY KEY AUTO_INCREMENT,
-    date DATE,
-    inputText TEXT,
-    emotionalIntensity VARCHAR(20),
-    overallSentiment VARCHAR(20)
-);
-
-CREATE TABLE TargetEmotion (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    diaryId INT,
-    emotion VARCHAR(255),
-    emotionPercentage DOUBLE,
-    FOREIGN KEY (diaryId) REFERENCES Diary(diaryId)
-);
 
 INSERT INTO diary (date, input_text, emotional_intensity, overall_sentiment) 
 VALUES ('2024-05-08', 'Feeling happy today!', 'Medium', 'Positive');
@@ -46,6 +31,7 @@ INSERT INTO target_emotion (diary_id, emotion, emotion_percentage)
 VALUES (2, 'Happiness', 40),
        (2, 'Sadness', 30),
        (2, 'Excitement', 30);
+
 
 SELECT 
     d.diary_id,
