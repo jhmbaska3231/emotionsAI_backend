@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/diaries")
 public class DiaryController {
 
-    @Autowired // to initialize DiaryService class
+    @Autowired
     private DiaryService diaryService;
 
     @GetMapping // for testing

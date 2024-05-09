@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DiaryService {
 
-    @Autowired // to initialize DiaryRepository class
+    @Autowired
     private DiaryRepository diaryRepository;
 
     public List<Diary> allDiaries() { // for testing
