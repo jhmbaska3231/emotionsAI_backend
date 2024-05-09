@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,6 +43,12 @@ public class DiaryController {
     @GetMapping("/with-emotions/{diary_id}")
     public ResponseEntity<Optional<DiaryRequest>> getSingleDiaryWithTargetEmotions(@PathVariable int diary_id) {
         return new ResponseEntity<>(diaryService.singleDiaryWithTargetEmotions(diary_id), HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<Diary> createDiary(@RequestBody DiaryRequest request) {
+        Diary createdDiary = diaryService.createDiary(request);
+        return new ResponseEntity<>(createdDiary, HttpStatus.CREATED);
     }
 
 }

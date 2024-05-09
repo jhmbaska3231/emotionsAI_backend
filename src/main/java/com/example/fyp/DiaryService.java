@@ -32,4 +32,13 @@ public class DiaryService {
         return diaryRepository.findDiaryWithTargetEmotionsById(diary_id);
     }
 
+    public Diary createDiary(DiaryRequest request) {
+        Diary diary = new Diary();
+        diary.setDate(request.getDate());
+        diary.setInput_text(request.getInputText());
+        diary.setEmotional_intensity(request.getEmotionalIntensity());
+        diary.setOverall_sentiment(request.getOverallSentiment());
+        return diaryRepository.save(diary);
+    }
+
 }
