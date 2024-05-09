@@ -34,4 +34,9 @@ public class TargetEmotion {
     @Column(name = "emotion_percentage")
     private Double emotion_percentage;
 
+    public TargetEmotion(String emotion, Double emotion_percentage){
+        this.emotion = emotion;
+        this.emotion_percentage = emotion_percentage;
+    }
+
 }

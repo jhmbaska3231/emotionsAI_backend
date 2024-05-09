@@ -1,3 +1,4 @@
+// data access/intermediary layer: between service class and database
 package com.example.fyp;
 
 import org.springframework.data.jpa.repository.JpaRepository;

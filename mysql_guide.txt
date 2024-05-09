@@ -24,6 +24,8 @@ INSERT INTO diary (date, input_text, emotional_intensity, overall_sentiment)
 VALUES ('2024-05-08', 'Feeling happy today!', 'Medium', 'Positive');
 INSERT INTO diary (date, input_text, emotional_intensity, overall_sentiment) 
 VALUES ('2024-05-09', 'Feeling a mix of emotions today', 'High', 'Neutral');
+INSERT INTO diary (date, input_text, emotional_intensity, overall_sentiment) 
+VALUES ('2024-04-02', 'blah blah blah!', 'Low', 'Negative');
 
 INSERT INTO target_emotion (diary_id, emotion, emotion_percentage)
 VALUES (1, 'Happiness', 100);
@@ -31,6 +33,8 @@ INSERT INTO target_emotion (diary_id, emotion, emotion_percentage)
 VALUES (2, 'Happiness', 40),
        (2, 'Sadness', 30),
        (2, 'Excitement', 30);
+INSERT INTO target_emotion (diary_id, emotion, emotion_percentage)
+VALUES (3, 'asd', 100);
 
 
 SELECT 

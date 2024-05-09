@@ -18,19 +18,29 @@ public class DiaryController {
     @Autowired // to initialize DiaryService class
     private DiaryService diaryService;
 
-    @GetMapping // this is without target emotion
+    @GetMapping // for testing
     public ResponseEntity<List<Diary>> getAllDiaries() {
         return new ResponseEntity<List<Diary>>(diaryService.allDiaries(), HttpStatus.OK);
     }
 
-    @GetMapping("/{diary_id}") // this is without target emotion
+    @GetMapping("/{diary_id}") // for testing
     public ResponseEntity<Optional<Diary>> getSingleDiary(@PathVariable int diary_id) {
         return new ResponseEntity<Optional<Diary>>(diaryService.singleDiary(diary_id), HttpStatus.OK);
     }
 
-    @GetMapping("/with-emotions") // this is with target emotion
-    public ResponseEntity<List<Object[]>> getAllDiariesWithTargetEmotions() {
+    // @GetMapping("/with-emotions") // this returns array, bad
+    // public ResponseEntity<List<Object[]>> getAllDiariesWithTargetEmotions() {
+    //     return new ResponseEntity<>(diaryService.allDiariesWithTargetEmotions(), HttpStatus.OK);
+    // }
+
+    @GetMapping("/with-emotions")
+    public ResponseEntity<List<DiaryRequest>> getAllDiariesWithTargetEmotions() {
         return new ResponseEntity<>(diaryService.allDiariesWithTargetEmotions(), HttpStatus.OK);
+    }
+
+    @GetMapping("/with-emotions/{diary_id}")
+    public ResponseEntity<Optional<DiaryRequest>> getSingleDiaryWithTargetEmotions(@PathVariable int diary_id) {
+        return new ResponseEntity<>(diaryService.singleDiaryWithTargetEmotions(diary_id), HttpStatus.OK);
     }
 
 }
