@@ -41,4 +41,8 @@ public class DiaryService {
         return diaryRepository.save(diary);
     }
 
+    // public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByMonth(int month) {
+    //     return diaryRepository.findDiariesWithTargetEmotionsByMonth(month);
+    // }
+
 }

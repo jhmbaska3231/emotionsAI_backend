@@ -51,4 +51,10 @@ public class DiaryController {
         return new ResponseEntity<>(createdDiary, HttpStatus.CREATED);
     }
 
+    // @GetMapping("/month/{month}")
+    // public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotionsByMonth(@PathVariable int month) {
+    //     List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByMonth(month);
+    //     return new ResponseEntity<>(diaries, HttpStatus.OK);
+    // }
+
 }

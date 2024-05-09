@@ -24,4 +24,19 @@ public interface DiaryRepository extends JpaRepository<Diary, Integer> {
             "WHERE d.diary_id = :diaryId")
     Optional<DiaryRequest> findDiaryWithTargetEmotionsById(@Param("diaryId") int diaryId);
 
+    // @Query("SELECT new com.example.fyp.DiaryWithTargetEmotionsDTO(d.diaryId, d.date, d.inputText, d.emotionalIntensity, d.overallSentiment, te.emotionId, te.emotionName, te.emotionIntensity) " +
+    //         "FROM Diary d LEFT JOIN d.targetEmotionsList te WHERE MONTH(d.date) = :month")
+    // List<DiaryWithTargetEmotionsDTO> findDiariesWithTargetEmotionsByMonth(@Param("month") int month);
+
+
+    // @Query("SELECT new com.example.fyp.DiaryWithTargetEmotionsDTO(d, " +
+    //         "new com.example.fyp.TargetEmotionRequest(te.emotionId, te.emotionName, te.emotionIntensity)) " +
+    //         "FROM Diary d LEFT JOIN d.targetEmotionsList te WHERE MONTH(d.date) = :month")
+    // List<DiaryWithTargetEmotionsDTO> findDiariesWithTargetEmotionsByMonth(@Param("month") int month);
+
+
+
+    // @Query("SELECT DISTINCT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList te WHERE MONTH(d.date) = :month")
+    // List<Diary> findDiariesWithTargetEmotionsByMonth(@Param("month") int month);
+
 }
