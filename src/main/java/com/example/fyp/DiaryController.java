@@ -49,13 +49,6 @@ public class DiaryController {
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
-    // less ideal way of saving a diary and multiple target emotions with multiple requests
-    @PostMapping
-    public ResponseEntity<Diary> createDiary(@RequestBody DiaryRequest request) {
-        Diary createdDiary = diaryService.createDiary(request);
-        return new ResponseEntity<>(createdDiary, HttpStatus.CREATED);
-    }
-
     // more ideal way of saving a diary in a single atomic transaction
     @PostMapping("/with-emotions")
     public ResponseEntity<DiaryWithTargetEmotionsDTO> createDiaryWithTargetEmotions(@RequestBody DiaryWithTargetEmotionsDTO request) {

@@ -52,16 +52,6 @@ public class DiaryService {
         }).collect(Collectors.toList());
     }
 
-    // less ideal way of saving a diary and multiple target emotions with multiple requests
-    public Diary createDiary(DiaryRequest request) {
-        Diary diary = new Diary();
-        diary.setDate(request.getDate());
-        diary.setInput_text(request.getInputText());
-        diary.setEmotional_intensity(request.getEmotionalIntensity());
-        diary.setOverall_sentiment(request.getOverallSentiment());
-        return diaryRepository.save(diary);
-    }
-
     // more ideal way of saving a diary in a single atomic transaction
     public DiaryWithTargetEmotionsDTO createDiaryWithTargetEmotions(DiaryWithTargetEmotionsDTO request) {
         Diary diary = new Diary();
