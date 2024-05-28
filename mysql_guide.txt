@@ -36,28 +36,17 @@ VALUES (13, 'Happiness', 40),
 INSERT INTO target_emotion (diary_id, emotion, emotion_percentage)
 VALUES (14, 'Anger', 100);
 
-INSERT INTO user (name, email)
-VALUES ('gayman', 'gayman@email.com');
-INSERT INTO user (name, email)
-VALUES ('notgayman', 'notgayman@email.com');
-
-
-SELECT 
-    d.diary_id,
-    d.date,
-    d.input_text,
-    d.emotional_intensity,
-    d.overall_sentiment,
-    te.emotion,
-    te.emotion_percentage
-FROM 
-    diary d
-LEFT JOIN 
-    target_emotion te ON d.diary_id = te.diary_id;
+INSERT INTO user (user_type, name, email)
+VALUES ('FreeUser', 'gayman2', 'gayman@email.com');
+INSERT INTO user (user_type, name, email)
+VALUES ('PaidUser', 'notgayman2', 'notgayman@email.com');
+INSERT INTO user (user_type, name, email)
+VALUES ('AdminUser', 'ultragayman2', 'ultragayman@email.com');
 
 
 SELECT 
     u.user_id,
+    u.user_type,
     d.diary_id,
     d.date,
     d.input_text,
