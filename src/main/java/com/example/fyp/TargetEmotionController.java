@@ -16,11 +16,6 @@ public class TargetEmotionController {
     
     @Autowired
     private TargetEmotionService targetEmotionService;
-    
-    // @PostMapping // uses map, bad
-    // public ResponseEntity<TargetEmotion> createTargetEmotion(@RequestBody Map<String, Double, Integer> payload) {
-    //     return new ResponseEntity<TargetEmotion>(targetEmotionService.createTargetEmotion(payload.get("emotion"), payload.get("emotion_percentage"), payload.get("diary_id")), HttpStatus.CREATED);
-    // }
 
     @PostMapping
     public ResponseEntity<TargetEmotion> createTargetEmotion(@RequestBody TargetEmotionRequest request) {

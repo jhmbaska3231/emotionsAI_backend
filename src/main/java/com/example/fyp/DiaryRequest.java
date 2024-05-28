@@ -7,9 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data // getters and setters
-@AllArgsConstructor // class constructor
-@NoArgsConstructor // default constructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class DiaryRequest {
 
     private int diaryId;

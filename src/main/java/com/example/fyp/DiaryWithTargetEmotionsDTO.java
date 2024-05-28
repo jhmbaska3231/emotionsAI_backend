@@ -18,16 +18,15 @@ public class DiaryWithTargetEmotionsDTO {
     private String inputText;
     private String emotionalIntensity;
     private String overallSentiment;
-    private List<TargetEmotionRequest> targetEmotionsList;
+    private List<TargetEmotionDTO> targetEmotionsList;
 
-    // public DiaryWithTargetEmotionsDTO(Diary diary, List<TargetEmotionRequest> targetEmotionsList) {
-    //     this.diaryId = diary.getDiary_id();
-    //     this.date = diary.getDate();
-    //     this.inputText = diary.getInput_text();
-    //     this.emotionalIntensity = diary.getEmotional_intensity();
-    //     this.overallSentiment = diary.getOverall_sentiment();
-    //     this.targetEmotionsList = targetEmotionsList;
-    // }
-    
+    public DiaryWithTargetEmotionsDTO(Diary diary, List<TargetEmotionDTO> targetEmotionsList) {
+        this.diaryId = diary.getDiary_id();
+        this.date = diary.getDate();
+        this.inputText = diary.getInput_text();
+        this.emotionalIntensity = diary.getEmotional_intensity();
+        this.overallSentiment = diary.getOverall_sentiment();
+        this.targetEmotionsList = targetEmotionsList;
+    }    
 
 }
