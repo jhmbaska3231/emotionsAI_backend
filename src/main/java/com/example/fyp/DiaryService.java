@@ -52,6 +52,7 @@ public class DiaryService {
         }).collect(Collectors.toList());
     }
 
+    // less ideal way of saving a diary and multiple target emotions with multiple requests
     public Diary createDiary(DiaryRequest request) {
         Diary diary = new Diary();
         diary.setDate(request.getDate());
@@ -59,6 +60,30 @@ public class DiaryService {
         diary.setEmotional_intensity(request.getEmotionalIntensity());
         diary.setOverall_sentiment(request.getOverallSentiment());
         return diaryRepository.save(diary);
+    }
+
+    // more ideal way of saving a diary in a single atomic transaction
+    public DiaryWithTargetEmotionsDTO createDiaryWithTargetEmotions(DiaryWithTargetEmotionsDTO request) {
+        Diary diary = new Diary();
+        diary.setDate(request.getDate());
+        diary.setInput_text(request.getInputText());
+        diary.setEmotional_intensity(request.getEmotionalIntensity());
+        diary.setOverall_sentiment(request.getOverallSentiment());
+
+        List<TargetEmotion> targetEmotions = request.getTargetEmotionsList().stream()
+                .map(teRequest -> new TargetEmotion(teRequest.getEmotion(), teRequest.getEmotionPercentage()))
+                .collect(Collectors.toList());
+
+        targetEmotions.forEach(te -> te.setDiary(diary));
+        diary.setTargetEmotionsList(targetEmotions);
+
+        Diary savedDiary = diaryRepository.save(diary);
+
+        List<TargetEmotionDTO> targetEmotionsDTOList = savedDiary.getTargetEmotionsList().stream()
+                .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))
+                .collect(Collectors.toList());
+
+        return new DiaryWithTargetEmotionsDTO(savedDiary, targetEmotionsDTOList);
     }
 
 }

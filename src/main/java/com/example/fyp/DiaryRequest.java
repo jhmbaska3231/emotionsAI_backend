@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+// less ideal way of saving a diary and multiple target emotions with multiple requests
 public class DiaryRequest {
 
     private int diaryId;

@@ -15,6 +15,7 @@ public class TargetEmotionService {
     @Autowired
     private DiaryRepository diaryRepository;
 
+    // less ideal way of saving a diary and multiple target emotions with multiple requests
     public TargetEmotion createTargetEmotion(TargetEmotionRequest request) {
 
         // Fetch the corresponding Diary entity from the database using diaryId
