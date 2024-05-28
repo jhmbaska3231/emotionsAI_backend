@@ -30,19 +30,14 @@ public class DiaryController {
     //     return new ResponseEntity<Optional<Diary>>(diaryService.singleDiary(diary_id), HttpStatus.OK);
     // }
 
+    // get diaries for all users, not needed in fyp
     @GetMapping("/with-emotions")
     public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotions() {
         List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotions();
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
-    // user specific
-    @GetMapping("/with-emotions/user/{userId}")
-    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getDiariesWithTargetEmotionsByUserId(@PathVariable int userId) {
-        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.getDiariesWithTargetEmotionsByUserId(userId);
-        return new ResponseEntity<>(diaries, HttpStatus.OK);
-    }
-
+    // get a diary, not needed in fyp
     @GetMapping("/with-emotions/{diaryId}")
     public ResponseEntity<DiaryWithTargetEmotionsDTO> getDiaryWithTargetEmotionsById(@PathVariable int diaryId) {
         Optional<DiaryWithTargetEmotionsDTO> diaryOptional = diaryService.getDiaryWithTargetEmotionsById(diaryId);
@@ -50,6 +45,14 @@ public class DiaryController {
                             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    // get diaries for specific user
+    @GetMapping("/with-emotions/user/{userId}")
+    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getDiariesWithTargetEmotionsByUserId(@PathVariable int userId) {
+        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.getDiariesWithTargetEmotionsByUserId(userId);
+        return new ResponseEntity<>(diaries, HttpStatus.OK);
+    }
+
+    // get diaries for specific month
     @GetMapping("/month/{month}")
     public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotionsByMonth(@PathVariable int month) {
         List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByMonth(month);

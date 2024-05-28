@@ -14,11 +14,11 @@ public interface DiaryRepository extends JpaRepository<Diary, Integer> {
     @Query("SELECT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList")
     List<Diary> findAllDiariesWithTargetEmotions();
 
-    @Query("SELECT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList te WHERE d.user.user_id = :userId")
-    List<Diary> findDiariesWithTargetEmotionsByUserId(@Param("userId") int userId);
-
     @Query("SELECT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList WHERE d.diary_id = :diaryId")
     Optional<Diary> findDiaryWithTargetEmotionsById(@Param("diaryId") int diaryId);
+
+    @Query("SELECT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList te WHERE d.user.user_id = :userId")
+    List<Diary> findDiariesWithTargetEmotionsByUserId(@Param("userId") int userId);
 
     @Query("SELECT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList WHERE MONTH(d.date) = :month")
     List<Diary> findDiariesWithTargetEmotionsByMonth(@Param("month") int month);

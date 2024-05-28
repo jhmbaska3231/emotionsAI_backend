@@ -19,6 +19,7 @@ public class DiaryWithTargetEmotionsDTO {
     private String emotionalIntensity;
     private String overallSentiment;
     private List<TargetEmotionDTO> targetEmotionsList;
+    private int userId;
 
     public DiaryWithTargetEmotionsDTO(Diary diary, List<TargetEmotionDTO> targetEmotionsList) {
         this.diaryId = diary.getDiary_id();
@@ -27,6 +28,7 @@ public class DiaryWithTargetEmotionsDTO {
         this.emotionalIntensity = diary.getEmotional_intensity();
         this.overallSentiment = diary.getOverall_sentiment();
         this.targetEmotionsList = targetEmotionsList;
+        this.userId = diary.getUser().getUser_id();
     }    
 
 }

@@ -13,6 +13,9 @@ public class DiaryService {
     @Autowired
     private DiaryRepository diaryRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     // public List<Diary> allDiaries() { // for testing
     //     return diaryRepository.findAll();
     // }
@@ -30,19 +33,7 @@ public class DiaryService {
             return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
         }).collect(Collectors.toList());
     }
-
-    // user specific
-    public List<DiaryWithTargetEmotionsDTO> getDiariesWithTargetEmotionsByUserId(int userId) {
-        List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByUserId(userId);
-        return diaries.stream().map(diary -> {
-            List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
-                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))
-                    .collect(Collectors.toList());
-            return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
-        }).collect(Collectors.toList());
-    }
     
-
     public Optional<DiaryWithTargetEmotionsDTO> getDiaryWithTargetEmotionsById(int diaryId) {
         Optional<Diary> diaryOptional = diaryRepository.findDiaryWithTargetEmotionsById(diaryId);
         return diaryOptional.map(diary -> {
@@ -51,6 +42,16 @@ public class DiaryService {
                     .collect(Collectors.toList());
             return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
         });
+    }
+
+    public List<DiaryWithTargetEmotionsDTO> getDiariesWithTargetEmotionsByUserId(int userId) {
+        List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByUserId(userId);
+        return diaries.stream().map(diary -> {
+            List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
+                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))
+                    .collect(Collectors.toList());
+            return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
+        }).collect(Collectors.toList());
     }
 
     // convert the fetched data into the DiaryWithTargetEmotionsDTO
@@ -66,11 +67,15 @@ public class DiaryService {
 
     // more ideal way of saving a diary in a single atomic transaction
     public DiaryWithTargetEmotionsDTO createDiaryWithTargetEmotions(DiaryWithTargetEmotionsDTO request) {
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Diary diary = new Diary();
         diary.setDate(request.getDate());
         diary.setInput_text(request.getInputText());
         diary.setEmotional_intensity(request.getEmotionalIntensity());
         diary.setOverall_sentiment(request.getOverallSentiment());
+        diary.setUser(user);
 
         List<TargetEmotion> targetEmotions = request.getTargetEmotionsList().stream()
                 .map(teRequest -> new TargetEmotion(teRequest.getEmotion(), teRequest.getEmotionPercentage()))
