@@ -20,24 +20,10 @@ public class DiaryController {
     @Autowired
     private DiaryService diaryService;
 
-    // get diaries for all users, not needed in fyp
-    @GetMapping("/with-emotions")
-    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotions() {
-        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotions();
-        return new ResponseEntity<>(diaries, HttpStatus.OK);
-    }
-
     // get diaries for specific user
     @GetMapping("/with-emotions/user/{userId}")
     public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getDiariesWithTargetEmotionsByUserId(@PathVariable int userId) {
         List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByUserId(userId);
-        return new ResponseEntity<>(diaries, HttpStatus.OK);
-    }
-
-    // get diaries for specific month
-    @GetMapping("/month/{month}")
-    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotionsByMonth(@PathVariable int month) {
-        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByMonth(month);
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
