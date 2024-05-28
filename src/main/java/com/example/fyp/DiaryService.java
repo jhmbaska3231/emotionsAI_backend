@@ -16,14 +16,6 @@ public class DiaryService {
     @Autowired
     private UserRepository userRepository;
 
-    // public List<Diary> allDiaries() { // for testing
-    //     return diaryRepository.findAll();
-    // }
-
-    // public Optional<Diary> singleDiary(int diary_id) { // for testing
-    //     return diaryRepository.findById(diary_id);
-    // }
-
     public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotions() {
         List<Diary> diaries = diaryRepository.findAllDiariesWithTargetEmotions();
         return diaries.stream().map(diary -> {
@@ -33,18 +25,8 @@ public class DiaryService {
             return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
         }).collect(Collectors.toList());
     }
-    
-    public Optional<DiaryWithTargetEmotionsDTO> getDiaryWithTargetEmotionsById(int diaryId) {
-        Optional<Diary> diaryOptional = diaryRepository.findDiaryWithTargetEmotionsById(diaryId);
-        return diaryOptional.map(diary -> {
-            List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
-                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))
-                    .collect(Collectors.toList());
-            return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
-        });
-    }
 
-    public List<DiaryWithTargetEmotionsDTO> getDiariesWithTargetEmotionsByUserId(int userId) {
+    public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByUserId(int userId) {
         List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByUserId(userId);
         return diaries.stream().map(diary -> {
             List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
@@ -57,6 +39,16 @@ public class DiaryService {
     // convert the fetched data into the DiaryWithTargetEmotionsDTO
     public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByMonth(int month) {
         List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByMonth(month);
+        return diaries.stream().map(diary -> {
+            List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
+                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))
+                    .collect(Collectors.toList());
+            return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
+        }).collect(Collectors.toList());
+    }
+
+    public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByMonthAndUserId(int userId, int month) {
+        List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByMonthAndUserId(userId, month);
         return diaries.stream().map(diary -> {
             List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
                     .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))

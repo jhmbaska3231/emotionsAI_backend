@@ -20,16 +20,6 @@ public class DiaryController {
     @Autowired
     private DiaryService diaryService;
 
-    // @GetMapping // for testing
-    // public ResponseEntity<List<Diary>> getAllDiaries() {
-    //     return new ResponseEntity<List<Diary>>(diaryService.allDiaries(), HttpStatus.OK);
-    // }
-
-    // @GetMapping("/{diary_id}") // for testing
-    // public ResponseEntity<Optional<Diary>> getSingleDiary(@PathVariable int diary_id) {
-    //     return new ResponseEntity<Optional<Diary>>(diaryService.singleDiary(diary_id), HttpStatus.OK);
-    // }
-
     // get diaries for all users, not needed in fyp
     @GetMapping("/with-emotions")
     public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotions() {
@@ -37,18 +27,10 @@ public class DiaryController {
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
-    // get a diary, not needed in fyp
-    @GetMapping("/with-emotions/{diaryId}")
-    public ResponseEntity<DiaryWithTargetEmotionsDTO> getDiaryWithTargetEmotionsById(@PathVariable int diaryId) {
-        Optional<DiaryWithTargetEmotionsDTO> diaryOptional = diaryService.getDiaryWithTargetEmotionsById(diaryId);
-        return diaryOptional.map(diary -> new ResponseEntity<>(diary, HttpStatus.OK))
-                            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
     // get diaries for specific user
     @GetMapping("/with-emotions/user/{userId}")
     public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getDiariesWithTargetEmotionsByUserId(@PathVariable int userId) {
-        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.getDiariesWithTargetEmotionsByUserId(userId);
+        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByUserId(userId);
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
@@ -56,6 +38,14 @@ public class DiaryController {
     @GetMapping("/month/{month}")
     public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotionsByMonth(@PathVariable int month) {
         List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByMonth(month);
+        return new ResponseEntity<>(diaries, HttpStatus.OK);
+    }
+
+    // get diaries for specific month and for specific user
+    @GetMapping("/user/{userId}/month/{month}")
+    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotionsByMonthAndUserId(
+            @PathVariable int userId, @PathVariable int month) {
+        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByMonthAndUserId(userId, month);
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
