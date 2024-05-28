@@ -31,6 +31,18 @@ public class DiaryService {
         }).collect(Collectors.toList());
     }
 
+    // user specific
+    public List<DiaryWithTargetEmotionsDTO> getDiariesWithTargetEmotionsByUserId(int userId) {
+        List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByUserId(userId);
+        return diaries.stream().map(diary -> {
+            List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
+                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))
+                    .collect(Collectors.toList());
+            return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
+        }).collect(Collectors.toList());
+    }
+    
+
     public Optional<DiaryWithTargetEmotionsDTO> getDiaryWithTargetEmotionsById(int diaryId) {
         Optional<Diary> diaryOptional = diaryRepository.findDiaryWithTargetEmotionsById(diaryId);
         return diaryOptional.map(diary -> {

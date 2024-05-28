@@ -36,6 +36,13 @@ public class DiaryController {
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
+    // user specific
+    @GetMapping("/with-emotions/user/{userId}")
+    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getDiariesWithTargetEmotionsByUserId(@PathVariable int userId) {
+        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.getDiariesWithTargetEmotionsByUserId(userId);
+        return new ResponseEntity<>(diaries, HttpStatus.OK);
+    }
+
     @GetMapping("/with-emotions/{diaryId}")
     public ResponseEntity<DiaryWithTargetEmotionsDTO> getDiaryWithTargetEmotionsById(@PathVariable int diaryId) {
         Optional<DiaryWithTargetEmotionsDTO> diaryOptional = diaryService.getDiaryWithTargetEmotionsById(diaryId);

@@ -20,21 +20,26 @@ DESC diary;
 DROP TABLE Diary;
 
 
-INSERT INTO diary (date, input_text, emotional_intensity, overall_sentiment) 
-VALUES ('2024-05-08', 'Feeling happy today!', 'Medium', 'Positive');
-INSERT INTO diary (date, input_text, emotional_intensity, overall_sentiment) 
-VALUES ('2024-05-09', 'Feeling a mix of emotions today', 'High', 'Neutral');
-INSERT INTO diary (date, input_text, emotional_intensity, overall_sentiment) 
-VALUES ('2024-04-02', 'blah blah blah!', 'Low', 'Negative');
+INSERT INTO diary (user_id, date, input_text, emotional_intensity, overall_sentiment) 
+VALUES (1, '2024-05-08', 'Feeling happy today!', 'Medium', 'Positive');
+INSERT INTO diary (user_id, date, input_text, emotional_intensity, overall_sentiment) 
+VALUES (2, '2024-05-09', 'Feeling a mix of emotions today', 'High', 'Neutral');
+INSERT INTO diary (user_id, date, input_text, emotional_intensity, overall_sentiment) 
+VALUES (2, '2024-04-02', 'blah blah blah!', 'Low', 'Negative');
 
 INSERT INTO target_emotion (diary_id, emotion, emotion_percentage)
-VALUES (1, 'Happiness', 100);
+VALUES (12, 'Happiness', 100);
 INSERT INTO target_emotion (diary_id, emotion, emotion_percentage)
-VALUES (2, 'Happiness', 40),
-       (2, 'Sadness', 30),
-       (2, 'Excitement', 30);
+VALUES (13, 'Happiness', 40),
+       (13, 'Sadness', 30),
+       (13, 'Excitement', 30);
 INSERT INTO target_emotion (diary_id, emotion, emotion_percentage)
-VALUES (3, 'asd', 100);
+VALUES (14, 'Anger', 100);
+
+INSERT INTO user (name, email)
+VALUES ('gayman', 'gayman@email.com');
+INSERT INTO user (name, email)
+VALUES ('notgayman', 'notgayman@email.com');
 
 
 SELECT 
@@ -49,3 +54,21 @@ FROM
     diary d
 LEFT JOIN 
     target_emotion te ON d.diary_id = te.diary_id;
+
+
+SELECT 
+    u.user_id,
+    d.diary_id,
+    d.date,
+    d.input_text,
+    d.emotional_intensity,
+    d.overall_sentiment,
+    te.emotion,
+    te.emotion_percentage
+FROM 
+    diary d
+LEFT JOIN 
+    target_emotion te ON d.diary_id = te.diary_id
+LEFT JOIN 
+    user u ON d.user_id = u.user_id;
+
