@@ -15,9 +15,9 @@ import lombok.EqualsAndHashCode;
 public class FreeUser extends User {
     
     @Column(name = "transcribe_count")
-    private int transcribe_count;
+    private int transcribeCount;
 
     @Column(name = "last_transcribe_time")
-    private LocalDateTime last_transcribe_time;
+    private LocalDateTime lastTranscribeTime;
 
 }

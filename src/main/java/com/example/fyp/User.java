@@ -31,7 +31,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // auto generate id at db end
     @Column(name = "user_id")
-    private int user_id;
+    private int userId;
 
     @Column(name = "name")
     private String name;

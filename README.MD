@@ -1,4 +1,5 @@
-step1 install apache maven v3.9.6
+Steps to install apache maven v3.9.6
+install apache maven v3.9.6
 sudo mv ~/Downloads/apache-maven-3.9.6 /opt/
 cd /opt
 ls

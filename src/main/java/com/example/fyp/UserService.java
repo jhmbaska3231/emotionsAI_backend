@@ -36,12 +36,12 @@ public class UserService {
         paidUser.setDiariesList(freeUser.getDiariesList());
 
         Subscription subscription = new Subscription();
-        subscription.setStart_date(LocalDate.now());
+        subscription.setStartDate(LocalDate.now());
         // setEnd_date
         subscription.setEndDate(subscriptionPlan == SubscriptionPlan.MONTHLY 
                 ? LocalDate.now().plusMonths(1)
                 : LocalDate.now().plusYears(1));
-        subscription.setSubscription_plan(subscriptionPlan);
+        subscription.setSubscriptionPlan(subscriptionPlan);
         subscription.setPaidUser(paidUser);
 
         paidUser.setSubscription(subscription);

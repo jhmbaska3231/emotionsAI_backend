@@ -29,17 +29,17 @@ public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subscription_id")
-    private int subscription_id;
+    private int subscriptionId;
 
     @Column(name = "start_date")
-    private LocalDate start_date;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING) // specify that this field should be persisted as a string representation of the enum
     @Column(name = "subscription_plan")
-    private SubscriptionPlan subscription_plan;
+    private SubscriptionPlan subscriptionPlan;
 
     @OneToOne
     @JoinColumn(name = "user_id")

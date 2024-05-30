@@ -23,7 +23,7 @@ public class Form {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // auto generate id at db end
     @Column(name = "form_id")
-    private int form_id;
+    private int formId;
 
     @Column(name = "date")
     private LocalDate date;
@@ -44,6 +44,6 @@ public class Form {
     private String message;
 
     @Column(name = "read_status")
-    private boolean read_status;
+    private boolean readStatus;
     
 }

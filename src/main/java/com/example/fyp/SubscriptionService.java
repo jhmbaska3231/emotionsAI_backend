@@ -26,12 +26,12 @@ public class SubscriptionService {
         for (Subscription subscription : expiredSubscriptions) {
             PaidUser paidUser = subscription.getPaidUser();
             FreeUser freeUser = new FreeUser();
-            freeUser.setUser_id(paidUser.getUser_id());
+            freeUser.setUserId(paidUser.getUserId());
             freeUser.setName(paidUser.getName());
             freeUser.setEmail(paidUser.getEmail());
             freeUser.setDiariesList(paidUser.getDiariesList());
-            freeUser.setTranscribe_count(0); // Reset the transcribe count
-            freeUser.setLast_transcribe_time(null); // Reset the last transcribe time
+            freeUser.setTranscribeCount(0); // Reset the transcribe count
+            freeUser.setLastTranscribeTime(null); // Reset the last transcribe time
 
             userRepository.delete(paidUser);
             userRepository.save(freeUser);

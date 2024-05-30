@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DiaryRepository extends JpaRepository<Diary, Integer> {
 
-    @Query("SELECT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList te WHERE d.user.user_id = :userId")
+    @Query("SELECT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList te WHERE d.user.userId = :userId")
     List<Diary> findDiariesWithTargetEmotionsByUserId(@Param("userId") int userId);
 
-    @Query("SELECT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList te WHERE d.user.user_id = :userId AND MONTH(d.date) = :month")
+    @Query("SELECT d FROM Diary d LEFT JOIN FETCH d.targetEmotionsList te WHERE d.user.userId = :userId AND MONTH(d.date) = :month")
     List<Diary> findDiariesWithTargetEmotionsByMonthAndUserId(@Param("userId") int userId, @Param("month") int month);
 
 }

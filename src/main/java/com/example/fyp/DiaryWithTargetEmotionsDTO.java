@@ -22,13 +22,13 @@ public class DiaryWithTargetEmotionsDTO {
     private int userId;
 
     public DiaryWithTargetEmotionsDTO(Diary diary, List<TargetEmotionDTO> targetEmotionsList) {
-        this.diaryId = diary.getDiary_id();
+        this.diaryId = diary.getDiaryId();
         this.date = diary.getDate();
-        this.inputText = diary.getInput_text();
-        this.emotionalIntensity = diary.getEmotional_intensity();
-        this.overallSentiment = diary.getOverall_sentiment();
+        this.inputText = diary.getInputText();
+        this.emotionalIntensity = diary.getEmotionalIntensity();
+        this.overallSentiment = diary.getOverallSentiment();
         this.targetEmotionsList = targetEmotionsList;
-        this.userId = diary.getUser().getUser_id();
+        this.userId = diary.getUser().getUserId();
     }    
 
 }

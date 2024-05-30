@@ -21,7 +21,7 @@ public class DiaryService {
         List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByUserId(userId);
         return diaries.stream().map(diary -> {
             List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
-                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))
+                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotionPercentage()))
                     .collect(Collectors.toList());
             return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
         }).collect(Collectors.toList());
@@ -31,7 +31,7 @@ public class DiaryService {
         List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByMonthAndUserId(userId, month);
         return diaries.stream().map(diary -> {
             List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
-                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))
+                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotionPercentage()))
                     .collect(Collectors.toList());
             return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
         }).collect(Collectors.toList());
@@ -43,9 +43,9 @@ public class DiaryService {
 
         Diary diary = new Diary();
         diary.setDate(request.getDate());
-        diary.setInput_text(request.getInputText());
-        diary.setEmotional_intensity(request.getEmotionalIntensity());
-        diary.setOverall_sentiment(request.getOverallSentiment());
+        diary.setInputText(request.getInputText());
+        diary.setEmotionalIntensity(request.getEmotionalIntensity());
+        diary.setOverallSentiment(request.getOverallSentiment());
         diary.setUser(user);
 
         List<TargetEmotion> targetEmotions = request.getTargetEmotionsList().stream()
@@ -58,7 +58,7 @@ public class DiaryService {
         Diary savedDiary = diaryRepository.save(diary);
 
         List<TargetEmotionDTO> targetEmotionsDTOList = savedDiary.getTargetEmotionsList().stream()
-                .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotion_percentage()))
+                .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotionPercentage()))
                 .collect(Collectors.toList());
 
         return new DiaryWithTargetEmotionsDTO(savedDiary, targetEmotionsDTOList);

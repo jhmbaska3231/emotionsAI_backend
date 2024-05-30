@@ -38,7 +38,7 @@ public class UserController {
                 break;
             case "FreeUser":
                 user = new FreeUser();
-                ((FreeUser) user).setTranscribe_count(0);
+                ((FreeUser) user).setTranscribeCount(0);
                 break;
             case "PaidUser":
                 user = new PaidUser();

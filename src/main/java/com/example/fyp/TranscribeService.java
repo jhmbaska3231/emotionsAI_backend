@@ -24,11 +24,11 @@ public class TranscribeService {
         
         FreeUser freeUser = (FreeUser) user;
         
-        if (is24HoursPassed(freeUser.getLast_transcribe_time())) {
-            freeUser.setTranscribe_count(0);
+        if (is24HoursPassed(freeUser.getLastTranscribeTime())) {
+            freeUser.setTranscribeCount(0);
         }
         
-        if (freeUser.getTranscribe_count() >= 3) {
+        if (freeUser.getTranscribeCount() >= 3) {
             throw new IllegalStateException("Free user has reached the transcribe count limit.");
         }
         
@@ -37,8 +37,8 @@ public class TranscribeService {
         // ...........................................
         // ...........................................
         
-        freeUser.setTranscribe_count(freeUser.getTranscribe_count() + 1);
-        freeUser.setLast_transcribe_time(LocalDateTime.now());
+        freeUser.setTranscribeCount(freeUser.getTranscribeCount() + 1);
+        freeUser.setLastTranscribeTime(LocalDateTime.now());
         
         userRepository.save(freeUser);
     }
