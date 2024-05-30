@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 
 @Entity
 @DiscriminatorValue("FreeUser")
-@Data // getters and setters
+@Data
 @EqualsAndHashCode(callSuper = false) // tell Lombok not to include the superclass fields in the equals and hashCode implementations
 public class FreeUser extends User {
     
