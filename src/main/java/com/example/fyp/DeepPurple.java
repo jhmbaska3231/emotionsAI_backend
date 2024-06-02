@@ -1,24 +1,30 @@
 package com.example.fyp;
 
-import okhttp3.*;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
+import java.io.IOException;
+
 import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class DeepPurple {
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     private static final String API_KEY = "sk-proj-fvYUlxUBz1u1HFy6V8ogT3BlbkFJ5UpcEXlVUmXVkHBivGBW";
 
-    // Sample Usage
-    // public static void main(String[] args) throws IOException {
-    //     String inputText = "Your input text here";
-    //     String emotion = analyzeEmotion(inputText);
-    //     System.out.println("Emotion: " + emotion);
-    // }
+    //Sample Usage
+    public static void main(String[] args) throws IOException {
+        String inputText = "Today, the clouds were dark and I enjoyed the breeze of the cool wind. Also I had a very nice chicken today :)";
+        String emotion = analyzeEmotion(inputText);
+        System.out.println("Emotion: " + emotion);
+    }
 
     public static String analyzeEmotion(String text) throws IOException {
         OkHttpClient client = new OkHttpClient();
