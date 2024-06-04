@@ -24,7 +24,7 @@ public class AudioToText {
     //     System.out.println("Transcription: " + transcript);
     // }
 
-    public static String transcribeAudio(File audioFile) throws IOException {
+    public String transcribeAudio(File audioFile) throws IOException {
         if (!isSupportedFileType(audioFile)) {
             throw new IOException("Unsupported file type. Supported types are: mp3, mp4, mpeg, mpga, m4a, wav, and webm.");
         }
@@ -42,6 +42,7 @@ public class AudioToText {
         RequestBody formBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", audioFile.getName(), fileBody)
+                .addFormDataPart("model", "whisper-1") // Add the model parameter
                 .build();
 
         // Build the HTTP request
@@ -52,15 +53,22 @@ public class AudioToText {
                 .build();
 
         // Execute the request
-        Response response = client.newCall(request).execute();
-        // Convert response body to string
-        String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
-        // Parse the JSON response to get the transcription text
-        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-        return jsonObject.get("text").getAsString();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            // Convert response body to string
+            String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
+            // Parse the JSON response to get the transcription text
+            JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+            return jsonObject.get("text").getAsString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
-    private static boolean isSupportedFileType(File file) {
+    public boolean isSupportedFileType(File file) {
         String fileName = file.getName();
         String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
         for (String type : SUPPORTED_TYPES) {
@@ -71,7 +79,7 @@ public class AudioToText {
         return false;
     }
 
-    private static String getMediaType(File file) {
+    public String getMediaType(File file) {
         String fileName = file.getName();
         String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
         switch (fileExtension) {
