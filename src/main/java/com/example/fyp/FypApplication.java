@@ -17,14 +17,22 @@ public class FypApplication {
 
 	public static void main(String[] args) {
 		// SpringApplication.run(FypApplication.class, args);
-		// AudioToText audioToText = new AudioToText();
-		// File audioFile = new File("src\\test\\java\\com\\example\\fyp\\valid.wav");
-		// try{
-		// 	String transcription = audioToText.transcribeAudio(audioFile);
-		// 	System.out.println(transcription);
-		// }catch (IOException e){
-		// 	System.out.println(e);
-		// }
+		// DEMO
+		DeepPurple deepPurple = new DeepPurple();
+		AudioToText audioToText = new AudioToText();
+		File audioFile = new File("src\\test\\java\\com\\example\\fyp\\valid.wav");
+		try{
+			
+			String transcription = audioToText.transcribeAudio(audioFile);
+			System.out.println("Audio File Transcription: ");
+			System.out.println(transcription);
+			String analysis = deepPurple.analyzeEmotion(transcription);
+			System.out.println("Emotional Analysis");
+			System.out.println(analysis);
+
+		}catch (IOException e){
+			System.out.println(e);
+		}
 
 	}
 

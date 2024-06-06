@@ -61,6 +61,7 @@ public class AudioToText {
             String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
             // Parse the JSON response to get the transcription text
             JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+            // System.out.println(jsonObject);
             return jsonObject.get("text").getAsString();
         } catch (IOException e) {
             e.printStackTrace();

@@ -61,7 +61,7 @@ public class DeepPurple {
             }
             String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
             JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-            System.out.println(jsonObject);
+            // System.out.println(jsonObject);
             return jsonObject.get("choices").getAsJsonArray()
                             .get(0).getAsJsonObject()
                             .get("message").getAsJsonObject()
