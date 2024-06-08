@@ -49,7 +49,7 @@ public class Diary {
     @JsonIgnore // to prevent infinite relationship loop
     private List<TargetEmotion> targetEmotionsList;
 
-    @ManyToOne(fetch = FetchType.LAZY) // mapped to diaries attribute in User class
+    @ManyToOne(fetch = FetchType.LAZY) // mapped to diaries attribute in User class, lazy loading means data from User will only be loaded from the database when it's accessed for the first time, instead of being loaded along with Diary object at the time of initial query
     @JoinColumn(name = "user_id")
     @JsonIgnore // to prevent infinite relationship loop
     private User user;
