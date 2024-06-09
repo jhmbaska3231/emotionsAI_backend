@@ -3,6 +3,8 @@ package com.example.fyp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +19,20 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    // @PostMapping
+    // public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
+    //     User user = convertToEntity(userDTO);
+    //     User createdUser = userService.createUser(user);
+    //     return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    // }
+
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO, @AuthenticationPrincipal Jwt jwt) {
+        // Retrieve email from JWT token
+        String email = jwt.getClaim("email");
+        if (userDTO.getEmail() == null) {
+            userDTO.setEmail(email);
+        }
         User user = convertToEntity(userDTO);
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
