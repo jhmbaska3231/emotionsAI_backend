@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -25,22 +28,31 @@ public class UserController {
     //     User createdUser = userService.createUser(user);
     //     return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     // }
+    
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO, @AuthenticationPrincipal Jwt jwt) {
+        logger.info("Received request to create user: {}", userDTO);
+
         // Retrieve email from JWT token
-        String email = jwt.getClaim("email");
-        if (userDTO.getEmail() == null) {
-            userDTO.setEmail(email);
+        String email = jwt != null ? jwt.getClaim("email") : userDTO.getEmail();
+        if (email == null) {
+            logger.error("Email is null in the request");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        userDTO.setEmail(email);
+
         User user = convertToEntity(userDTO);
         User createdUser = userService.createUser(user);
+        logger.info("User created successfully: {}", createdUser);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @PostMapping("/{freeUserId}/upgrade")
     public ResponseEntity<PaidUser> upgradeToPaidUser(@PathVariable int freeUserId, @RequestParam SubscriptionPlan subscriptionPlan) {
         PaidUser upgradedUser = userService.upgradeToPaidUser(freeUserId, subscriptionPlan);
+        logger.info("User with ID {} upgraded to paid user: {}", freeUserId, upgradedUser);
         return new ResponseEntity<>(upgradedUser, HttpStatus.OK);
     }
 
