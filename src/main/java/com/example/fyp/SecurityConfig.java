@@ -26,6 +26,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("Admin")
+                
+                // try
+                // .requestMatchers("/api/users").permitAll() // Allow unauthenticated access
+
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
@@ -35,11 +39,13 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // original working
     // @Bean
     // public JwtDecoder jwtDecoder() {
     //     return JwtDecoders.fromOidcIssuerLocation("https://cognito-idp.us-east-1.amazonaws.com/us-east-1_21CWOgPqF");
     // }
 
+    // try
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withSecretKey(new SecretKeySpec(jwtSecret.getBytes(), "HmacSHA256")).build();
