@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -26,10 +25,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("Admin")
-                
-                // try
-                // .requestMatchers("/api/users").permitAll() // Allow unauthenticated access
-
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
@@ -39,16 +34,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // try
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withSecretKey(new SecretKeySpec(jwtSecret.getBytes(), "HmacSHA256")).build();
     }
-
-    // original working
-    // @Bean
-    // public JwtDecoder jwtDecoder() {
-    //     return JwtDecoders.fromOidcIssuerLocation("https://cognito-idp.us-east-1.amazonaws.com/us-east-1_21CWOgPqF");
-    // }
 
 }
