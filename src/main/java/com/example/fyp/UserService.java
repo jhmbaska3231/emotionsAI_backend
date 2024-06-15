@@ -20,35 +20,35 @@ public class UserService {
     }
 
     @Transactional
-    public PaidUser upgradeToPaidUser(int freeUserId, SubscriptionPlan subscriptionPlan) {
-        User user = userRepository.findById(freeUserId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    public PaidUser upgradeToPaidUser(String freeUserId, SubscriptionPlan subscriptionPlan) {
+        FreeUser freeUser = (FreeUser) userRepository.findById(freeUserId)
+                .orElseThrow(() -> new EntityNotFoundException("FreeUser not found"));
 
-        if (!(user instanceof FreeUser)) {
-            throw new IllegalArgumentException("User is not a free user");
-        }
-
-        FreeUser freeUser = (FreeUser) user;
-
+        // Create a new instance of PaidUser
         PaidUser paidUser = new PaidUser();
         paidUser.setName(freeUser.getName());
         paidUser.setEmail(freeUser.getEmail());
         paidUser.setDiariesList(freeUser.getDiariesList());
 
+        // Create a new Subscription
         Subscription subscription = new Subscription();
         subscription.setStartDate(LocalDate.now());
-        // setEnd_date
         subscription.setEndDate(subscriptionPlan == SubscriptionPlan.MONTHLY 
                 ? LocalDate.now().plusMonths(1)
                 : LocalDate.now().plusYears(1));
         subscription.setSubscriptionPlan(subscriptionPlan);
         subscription.setPaidUser(paidUser);
 
+        // Associate Subscription with PaidUser
         paidUser.setSubscription(subscription);
 
-        userRepository.delete(freeUser); // Remove the old free user
+        // Save the new PaidUser
+        PaidUser savedPaidUser = userRepository.save(paidUser);
 
-        return userRepository.save(paidUser);
+        // Remove the old FreeUser
+        userRepository.delete(freeUser);
+
+        return savedPaidUser;
     }
-    
+
 }

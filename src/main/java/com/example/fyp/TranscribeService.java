@@ -14,7 +14,7 @@ public class TranscribeService {
     @Autowired
     private UserRepository userRepository;
 
-    public void transcribeText(int userId, String textToTranscribe) {
+    public void transcribeText(String userId, String textToTranscribe) {
         User user = userRepository.findById(userId)
                                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
         

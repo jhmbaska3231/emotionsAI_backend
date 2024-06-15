@@ -21,13 +21,6 @@ public class UserController {
     
     @Autowired
     private UserService userService;
-
-    // @PostMapping
-    // public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
-    //     User user = convertToEntity(userDTO);
-    //     User createdUser = userService.createUser(user);
-    //     return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-    // }
     
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -43,6 +36,12 @@ public class UserController {
         }
         userDTO.setEmail(email);
 
+        // Set userId if present in JWT token
+        String userId = jwt != null ? jwt.getSubject() : null;
+        if (userId != null) {
+            userDTO.setUserId(userId);
+        }
+
         User user = convertToEntity(userDTO);
         User createdUser = userService.createUser(user);
         logger.info("User created successfully: {}", createdUser);
@@ -50,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping("/{freeUserId}/upgrade")
-    public ResponseEntity<PaidUser> upgradeToPaidUser(@PathVariable int freeUserId, @RequestParam SubscriptionPlan subscriptionPlan) {
+    public ResponseEntity<PaidUser> upgradeToPaidUser(@PathVariable String freeUserId, @RequestParam SubscriptionPlan subscriptionPlan) {
         PaidUser upgradedUser = userService.upgradeToPaidUser(freeUserId, subscriptionPlan);
         logger.info("User with ID {} upgraded to paid user: {}", freeUserId, upgradedUser);
         return new ResponseEntity<>(upgradedUser, HttpStatus.OK);
@@ -74,6 +73,10 @@ public class UserController {
         }
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
+        // Set userId if present
+        if (userDTO.getUserId() != null) {
+            user.setUserId(userDTO.getUserId());
+        }
         return user;
     }
 
