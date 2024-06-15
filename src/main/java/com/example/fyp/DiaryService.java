@@ -17,7 +17,7 @@ public class DiaryService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByUserId(int userId) {
+    public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByUserId(String userId) {
         List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByUserId(userId);
         return diaries.stream().map(diary -> {
             List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
@@ -27,7 +27,7 @@ public class DiaryService {
         }).collect(Collectors.toList());
     }
 
-    public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByMonthAndUserId(int userId, int month) {
+    public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByMonthAndUserId(String userId, int month) {
         List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByMonthAndUserId(userId, month);
         return diaries.stream().map(diary -> {
             List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()

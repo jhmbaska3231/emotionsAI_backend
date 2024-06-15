@@ -22,7 +22,7 @@ public class DiaryController {
 
     // get diaries for specific user
     @GetMapping("/with-emotions/user/{userId}")
-    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getDiariesWithTargetEmotionsByUserId(@PathVariable int userId) {
+    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getDiariesWithTargetEmotionsByUserId(@PathVariable String userId) {
         List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByUserId(userId);
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
@@ -30,7 +30,7 @@ public class DiaryController {
     // get diaries for specific month and for specific user
     @GetMapping("/user/{userId}/month/{month}")
     public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotionsByMonthAndUserId(
-            @PathVariable int userId, @PathVariable int month) {
+            @PathVariable String userId, @PathVariable int month) {
         List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByMonthAndUserId(userId, month);
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
