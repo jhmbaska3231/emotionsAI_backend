@@ -22,14 +22,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data // getters and setters
-@AllArgsConstructor // class constructor
-@NoArgsConstructor // default constructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "diary")
 public class Diary {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto generate id at db end
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "diary_id")
     private int diaryId;
 

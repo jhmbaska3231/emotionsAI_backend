@@ -14,14 +14,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data // getters and setters
-@AllArgsConstructor // class constructor
-@NoArgsConstructor // default constructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "target_emotion")
 public class TargetEmotion {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto generate id at db end
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne

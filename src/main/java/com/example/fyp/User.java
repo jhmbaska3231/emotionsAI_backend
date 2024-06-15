@@ -20,9 +20,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
-@Data // getters and setters
-@AllArgsConstructor // class constructor
-@NoArgsConstructor // default constructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "user")
 public class User {
 

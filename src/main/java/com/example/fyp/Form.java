@@ -14,14 +14,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data // getters and setters
-@AllArgsConstructor // class constructor
-@NoArgsConstructor // default constructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "form")
 public class Form {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto generate id at db end
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "form_id")
     private int formId;
 

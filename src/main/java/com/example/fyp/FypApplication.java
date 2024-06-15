@@ -1,7 +1,6 @@
 // http://localhost:8080/
 
 package com.example.fyp;
-// import com.example.fyp.DeepPurple;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
