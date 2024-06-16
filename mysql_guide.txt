@@ -16,12 +16,12 @@ SELECT USER();
 
 
 show databases;
-use emotionsAI_DB;
+use database_name;
 show tables;
-desc diary;
+desc table_name;
 
 
-drop table Diary;
+drop table table_name;
 
 
 SELECT 
