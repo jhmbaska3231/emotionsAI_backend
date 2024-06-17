@@ -22,7 +22,7 @@ public class DeepPurple {
     //     System.out.println("Emotion: " + emotion);
     // }
 
-    public String analyzeEmotion(String text) throws IOException {
+    public String analyzeEmotion(String text, String userType) throws IOException {
         if (text == null || text.trim().isEmpty()){
             throw new IllegalArgumentException("Input text cannot be null or empty.");
         }
@@ -32,7 +32,7 @@ public class DeepPurple {
         // Creating Json Objects for System and User
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", createSystemContent());
+        systemMessage.addProperty("content", createSystemContent(userType));
 
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", "user");
@@ -72,15 +72,27 @@ public class DeepPurple {
         }
     }
 
-    private String createSystemContent() {
-        return "Analyze the provided input text and determine the emotion(s) it conveys from the list of emotions." + //
-        "After identifying the suitable emotion(s), assess the emotional intensity of the text as \"high,\" \"medium,\" or \"low." +// 
-        "Next, indicate the overall sentiment of the text as \"positive,\" \"neutral,\" or \"negative.\" " + //
-        "Finally, for each emotion detected above, please add a weightage percentage point beside it, the sum of the percentage point of all emotions must add up to 100. " + //
-        "Here is the template for the output (a,b,c are the percentages that sum up to 100): \"Target Emotion(s): x (a%), y (b%), z (c%) \\n" + //
-        "Emotional Intensity: xx \\n" + //
-        "Overall Sentiment: yy\" \r\n" + //
-        "Emotions List: \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\"." + //
-        "Only choose from the emotions list for your answer.";
+    private String createSystemContent(String userType) {
+        if ("paid".equalsIgnoreCase(userType)) {
+            return "Analyze the provided input text and determine the emotion(s) it conveys from a provided list of emotions." +
+                    "Emotions List: \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\"" + 
+                    "For EACH sentence in the input text, follow these steps:\n" +
+                    "1.Identify the suitable emotion(s) presented.\n" +
+                    "2. Assess the emotional intensity as \"high\", \"medium\", or \"low\"." +
+                    "3. Indicate the sentiment as \"positive\", \"neutral\", or \"negative\"." +
+                    "4. Add a weight to the detected emotion. The weight is a percentage of all the emotions present in the whole text. The sum of the percentage weights must add up to 100.\n" +
+                    "5. Concatenate a parentheses that contains (Emotions_Detected, Intensity, Sentiment, Weight).\n" +
+                    "All the annotated sentences will be combined at the end of the analysis, while maintaining the original structure of the input text. This will be referred to as the \"Annotated Text\" in the output template." +
+                    "Here is a template of the output:\n" +
+                    "Annotated Text: {}\nDetected Emotions(s): x (a%), y (b%), z (c%)\nOverall Emotional Intensity: {d}\nOverall Sentiment: {e}";
+
+        } else {
+            return "Analyze the provided input text and determine the primary emotion it conveys from the list of emotions." + 
+                   "Indicate the overall sentiment of the text as \"positive,\" \"neutral,\" or \"negative.\" " + 
+                   "Here is the template for the output: \"Target Emotion: x \\n" + 
+                   "Overall Sentiment: yy\" \r\n" + 
+                   "Emotions List: \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\"." + 
+                   "Only choose from the emotions list for your answer.";
+        }
     }
 }

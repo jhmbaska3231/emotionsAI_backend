@@ -19,14 +19,15 @@ public class FypApplication {
 		// SpringApplication.run(FypApplication.class, args);
 		// DEMO
 		DeepPurple deepPurple = new DeepPurple();
-		AudioToText audioToText = new AudioToText();
-		File audioFile = new File("src\\test\\java\\com\\example\\fyp\\valid.wav");
+		// AudioToText audioToText = new AudioToText();
+		// File audioFile = new File("src\\test\\java\\com\\example\\fyp\\valid.wav");
 		try{
 			
-			String transcription = audioToText.transcribeAudio(audioFile);
-			System.out.println("Audio File Transcription: ");
-			System.out.println(transcription);
-			String analysis = deepPurple.analyzeEmotion(transcription);
+			// String transcription = audioToText.transcribeAudio(audioFile);
+			// System.out.println("Audio File Transcription: ");
+			//System.out.println(transcription);
+			String testTranscription = "Yesterday was a rollercoaster of emotions. I felt immense joy when I received the job offer I had been waiting for, but that happiness was overshadowed by a sense of guilt for leaving my current team behind. There was also a lingering anxiety about starting a new role in a completely different environment. Despite these mixed feelings, I am hopeful about the future and excited to see where this new opportunity takes me.";
+			String analysis = deepPurple.analyzeEmotion(testTranscription, "paid");
 			System.out.println("Emotional Analysis");
 			System.out.println(analysis);
 
