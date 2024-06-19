@@ -16,6 +16,7 @@ cd my-lambda-function
 npm init -y // Run this once at the start to create a package.json file
 npm install
 npm install jsonwebtoken
+npm install http
 
 // zip files for lambda function
 zip -r my-lambda-function.zip lambdaConfig.js package.json package-lock.json node_modules
