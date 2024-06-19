@@ -16,7 +16,8 @@ cd my-lambda-function
 npm init -y // Run this once at the start to create a package.json file
 npm install
 npm install jsonwebtoken
-npm install aws-sdk axios
+npm install axios
+npm install aws-sdk
 
 // zip files for lambda function
 zip -r my-lambda-function.zip .

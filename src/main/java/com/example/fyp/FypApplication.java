@@ -15,14 +15,14 @@ public class FypApplication {
 		
 		SpringApplication.run(FypApplication.class, args);
 
-		try{
-            String inputText = "today when i went out it started to rain... then i missed the bus... and was late for work. but thankfully i am able to walk";
-            String output = DeepPurple.analyzeEmotion(inputText);
-            System.out.println(output);
+		// try{
+        //     String inputText = "today when i went out it started to rain... then i missed the bus... and was late for work. but thankfully i am able to walk";
+        //     String output = DeepPurple.analyzeEmotion(inputText);
+        //     System.out.println(output);
             
-        } catch (Exception io){
-            System.out.println(io);
-        }
+        // } catch (Exception io){
+        //     System.out.println(io);
+        // }
 
 	}
 

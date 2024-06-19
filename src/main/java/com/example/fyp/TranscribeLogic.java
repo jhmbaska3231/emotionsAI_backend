@@ -14,19 +14,20 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class DeepPurple {
+public class TranscribeLogic {
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     private static final String API_KEY = "sk-proj-fvYUlxUBz1u1HFy6V8ogT3BlbkFJ5UpcEXlVUmXVkHBivGBW";
 
     //Sample Usage
-    public static void main(String[] args) throws IOException {
-        String inputText = "Today, the clouds were dark and I enjoyed the breeze of the cool wind. Also I had a very nice chicken today :)";
-        String emotion = analyzeEmotion(inputText);
-        System.out.println("Emotion: " + emotion);
-    }
+    // public static void main(String[] args) throws IOException {
+    //     String inputText = "Today, the clouds were dark and I enjoyed the breeze of the cool wind. Also I had a very nice chicken today :)";
+    //     String emotion = analyzeEmotion(inputText);
+    //     System.out.println("Emotion: " + emotion);
+    // }
 
     public static String analyzeEmotion(String text) throws IOException {
+
         OkHttpClient client = new OkHttpClient();
 
         // Creating Json Objects for System and User
@@ -65,5 +66,7 @@ public class DeepPurple {
                          .get(0).getAsJsonObject()
                          .get("message").getAsJsonObject()
                          .get("content").getAsString();
+                         
     }
+
 }
