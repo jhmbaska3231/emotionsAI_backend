@@ -34,29 +34,29 @@ public class TranscribeService {
     private static final String apiUrl = "https://api.openai.com/v1/chat/completions";
 
     // validation for free user
-    // public void transcribeText(String userId, String textToTranscribe) {
-    //     User user = userRepository.findById(userId)
-    //                                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    public void transcribeText(String userId, String textToTranscribe) {
+        User user = userRepository.findById(userId)
+                                   .orElseThrow(() -> new EntityNotFoundException("User not found"));
         
-    //     if (!(user instanceof FreeUser)) {
-    //         throw new IllegalArgumentException("User is not a FreeUser");
-    //     }
+        if (!(user instanceof FreeUser)) {
+            throw new IllegalArgumentException("User is not a FreeUser");
+        }
         
-    //     FreeUser freeUser = (FreeUser) user;
+        FreeUser freeUser = (FreeUser) user;
         
-    //     if (is24HoursPassed(freeUser.getLastTranscribeTime())) {
-    //         freeUser.setTranscribeCount(0);
-    //     }
+        if (is24HoursPassed(freeUser.getLastTranscribeTime())) {
+            freeUser.setTranscribeCount(0);
+        }
         
-    //     if (freeUser.getTranscribeCount() >= 3) {
-    //         throw new IllegalStateException("Free user has reached the transcribe count limit.");
-    //     }
+        if (freeUser.getTranscribeCount() >= 3) {
+            throw new IllegalStateException("Free user has reached the transcribe count limit.");
+        }
         
-    //     freeUser.setTranscribeCount(freeUser.getTranscribeCount() + 1);
-    //     freeUser.setLastTranscribeTime(LocalDateTime.now());
+        freeUser.setTranscribeCount(freeUser.getTranscribeCount() + 1);
+        freeUser.setLastTranscribeTime(LocalDateTime.now());
         
-    //     userRepository.save(freeUser);
-    // }
+        userRepository.save(freeUser);
+    }
     
     private boolean is24HoursPassed(LocalDateTime lastTranscribeTime) {
         if (lastTranscribeTime == null) {
