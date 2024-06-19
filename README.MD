@@ -16,10 +16,9 @@ cd my-lambda-function
 npm init -y // Run this once at the start to create a package.json file
 npm install
 npm install jsonwebtoken
-npm install http
+npm install aws-sdk axios
 
 // zip files for lambda function
-zip -r my-lambda-function.zip lambdaConfig.js package.json package-lock.json node_modules
 zip -r my-lambda-function.zip .
 
 // generate JWT token for new user to use in Postman
