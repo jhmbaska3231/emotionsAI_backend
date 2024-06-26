@@ -1,27 +1,40 @@
 package com.example.fyp;
 
-import okhttp3.*;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
-// import java.io.FileInputStream;
 import java.io.IOException;
 
-public class AudioToText {
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-    private static final String API_URL = "https://api.openai.com/v1/audio/transcriptions";
-    private static final String API_KEY = "sk-proj-fvYUlxUBz1u1HFy6V8ogT3BlbkFJ5UpcEXlVUmXVkHBivGBW";
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import org.apache.commons.io.IOUtils;
+
+@Service
+public class AudioToTextService {
+
+    @Value("${openai.api.key}")
+    private String apiKey;
+
+    private static final String apiUrl = "https://api.openai.com/v1/audio/transcriptions";
 
     // Sample usage
     // public static void main(String[] args) throws IOException {
     //     File audioFile = new File("path_to_audio_file.wav");
-    //     String transcript = transcribeAudio(audioFile);
+    //     String transcript = convertAudioToText(audioFile);
     //     System.out.println("Transcription: " + transcript);
     // }
 
-    public static String transcribeAudio(File audioFile) throws IOException {
+    public String convertAudioToText(File audioFile) throws IOException {
+        
         OkHttpClient client = new OkHttpClient();
         
         // Create the file body for the request
@@ -35,17 +48,16 @@ public class AudioToText {
         
         // Build the HTTP request
         Request request = new Request.Builder()
-                .url(API_URL)
+                .url(apiUrl)
                 .post(formBody)
-                .addHeader("Authorization", "Bearer " + API_KEY)
+                .addHeader("Authorization", "Bearer " + apiKey)
                 .build();
 
-        // Execute the request
         Response response = client.newCall(request).execute();
-        // Convert response body to string
         String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
-        // Parse the JSON response to the transcription text
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
         return jsonObject.get("text").getAsString();
+
     }
+
 }

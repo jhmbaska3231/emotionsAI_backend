@@ -1,5 +1,3 @@
-// http://localhost:8080/
-
 package com.example.fyp;
 
 import org.springframework.boot.SpringApplication;
