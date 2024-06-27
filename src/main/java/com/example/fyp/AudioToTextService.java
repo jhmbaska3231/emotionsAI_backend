@@ -26,13 +26,6 @@ public class AudioToTextService {
 
     private static final String apiUrl = "https://api.openai.com/v1/audio/transcriptions";
 
-    // Sample usage
-    // public static void main(String[] args) throws IOException {
-    //     File audioFile = new File("path_to_audio_file.wav");
-    //     String transcript = convertAudioToText(audioFile);
-    //     System.out.println("Transcription: " + transcript);
-    // }
-
     public String convertAudioToText(File audioFile) throws IOException {
         
         OkHttpClient client = new OkHttpClient();
@@ -44,6 +37,7 @@ public class AudioToTextService {
         RequestBody formBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", audioFile.getName(), fileBody)
+                .addFormDataPart("model", "whisper-1")
                 .build();
         
         // Build the HTTP request
@@ -54,8 +48,14 @@ public class AudioToTextService {
                 .build();
 
         Response response = client.newCall(request).execute();
+
+        if (!response.isSuccessful()) {
+            throw new IOException("API request failed with status: " + response.code() + ", body: " + response.body().string());
+        }
+
         String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+
         return jsonObject.get("text").getAsString();
 
     }
