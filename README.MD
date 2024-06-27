@@ -13,11 +13,9 @@ mvn clean package
 // configure node.js script
 mkdir my-lambda-function
 cd my-lambda-function
-npm init -y // Run this once at the start to create a package.json file
+npm init -y
 npm install
 npm install jsonwebtoken
-npm install axios
-npm install aws-sdk
 
 // zip files for lambda function
 zip -r my-lambda-function.zip .
