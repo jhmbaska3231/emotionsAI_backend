@@ -22,3 +22,8 @@ zip -r my-lambda-function.zip .
 
 // generate JWT token for new user to use in Postman
 node generate_JWT_token.js
+
+// update nginx config each time jar file is uploaded
+sudo vim /etc/nginx/conf.d/01_nginx_upload_limit.conf
+client_max_body_size 25M;
+sudo systemctl restart nginx
