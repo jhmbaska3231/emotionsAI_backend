@@ -26,7 +26,7 @@ public class FypApplication {
 			// String transcription = audioToText.transcribeAudio(audioFile);
 			// System.out.println("Audio File Transcription: ");
 			//System.out.println(transcription);
-			String testTranscription = "Yesterday was a rollercoaster of emotions. I felt immense joy when I received the job offer I had been waiting for, but that happiness was overshadowed by a sense of guilt for leaving my current team behind. There was also a lingering anxiety about starting a new role in a completely different environment. Despite these mixed feelings, I am hopeful about the future and excited to see where this new opportunity takes me.";
+			String testTranscription = "Do you want to grab a burger? I heard the burger shop down the road is really great. Damn. I really don't know.";
 			String analysis = deepPurple.analyzeEmotion(testTranscription, "paid");
 			System.out.println("Emotional Analysis");
 			System.out.println(analysis);

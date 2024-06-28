@@ -74,24 +74,42 @@ public class DeepPurple {
 
     private String createSystemContent(String userType) {
         if ("paid".equalsIgnoreCase(userType)) {
-            return "Analyze the provided input text and determine the emotion(s) it conveys from a provided list of emotions." +
-                    "Emotions List: \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\"" + 
-                    "For EACH sentence in the input text, follow these steps:\n" +
-                    "1.Identify the suitable emotion(s) presented.\n" +
-                    "2. Assess the emotional intensity as \"high\", \"medium\", or \"low\"." +
-                    "3. Indicate the sentiment as \"positive\", \"neutral\", or \"negative\"." +
-                    "4. Add a weight to the detected emotion. The weight is a percentage of all the emotions present in the whole text. The sum of the percentage weights must add up to 100.\n" +
-                    "5. Concatenate a parentheses that contains (Emotions_Detected, Intensity, Sentiment, Weight).\n" +
-                    "All the annotated sentences will be combined at the end of the analysis, while maintaining the original structure of the input text. This will be referred to as the \"Annotated Text\" in the output template." +
-                    "Here is a template of the output:\n" +
-                    "Annotated Text: {}\nDetected Emotions(s): x (a%), y (b%), z (c%)\nOverall Emotional Intensity: {d}\nOverall Sentiment: {e}";
-
+            return "You will be provided a text. Your task is to analyze the provided text and determine the emotion(s) it conveys from a provided list of emotions.\n" + 
+                   "<emotions_list> \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\" </emotions_list>\n" + 
+                   "\n" + 
+                   "Use the following step-by-step instructions for each sentence in the text. Enclose all your work for these instructions in a similar structure as the original text.\n" + 
+                   "\n" + 
+                   "Step 1 - Identify the suitable emotion(s) presented.\n" + 
+                   "\n" + 
+                   "Step 2 - Assess the emotional intensity as \"high,\" \"medium,\" or \"low\".\n" + 
+                   "\n" + 
+                   "Step 3 - Indicate the sentiment as \"positive,\" \"neutral,\" or \"negative\".\n" + 
+                   "\n" + 
+                   "Step 4 - Add a weight to the detected emotion. The weight measures how much the emotion contributes to the overall sentiment of the text.\n" + 
+                   "\n" + 
+                   "Step 5 - At the end of the sentence, in parentheses, display the emotion detected, the emotional intensity, the sentiment and the weight of the emotion relative to the whole text. For example, (Joy, high, positive, 34%)\n" + 
+                   "\n" + 
+                   "Annotated Text refers to your resultant work for the instructions you followed previously.\n" + 
+                   "\n" + 
+                   "Detected Emotions is a list of all the detected emotions and their weightage relative to the whole text. i.e. Joy (50%), Sadness (50%)\n" + 
+                   "\n" + 
+                   "Overall Emotional Intensity is the average intensity of the whole text.\n" + 
+                   "\n" + 
+                   "Overall Sentiment is the average sentiment of the whole text.\n" + 
+                   "\n" + 
+                   "Only respond with this template enclosed in triple quotation:\n" + 
+                   "\"\"\"\n" + 
+                   "Annotated Text: {}\n" + 
+                   "Detected Emotions(s): x (a%), y (b%), z (c%)\n" + 
+                   "Overall Emotional Intensity: d\n" + 
+                   "Overall Sentiment: e\n" + 
+                   "\"\"\"\n";
         } else {
-            return "Analyze the provided input text and determine the primary emotion it conveys from the list of emotions." + 
+            return "Analyze the provided input text and determine the primary emotion it conveys from the list of emotions. " + 
                    "Indicate the overall sentiment of the text as \"positive,\" \"neutral,\" or \"negative.\" " + 
                    "Here is the template for the output: \"Target Emotion: x \\n" + 
                    "Overall Sentiment: yy\" \r\n" + 
-                   "Emotions List: \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\"." + 
+                   "Emotions List: \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\". " + 
                    "Only choose from the emotions list for your answer.";
         }
     }

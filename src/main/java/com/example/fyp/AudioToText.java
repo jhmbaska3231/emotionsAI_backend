@@ -85,6 +85,7 @@ public class AudioToText {
         String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
         switch (fileExtension) {
             case "mp3":
+                return "audio/mp3";
             case "mpga":
                 return "audio/mpeg";
             case "mp4":
