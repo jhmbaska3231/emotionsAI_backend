@@ -20,41 +20,23 @@ public class DiaryController {
     @Autowired
     private DiaryService diaryService;
 
-    @GetMapping // for testing
-    public ResponseEntity<List<Diary>> getAllDiaries() {
-        return new ResponseEntity<List<Diary>>(diaryService.allDiaries(), HttpStatus.OK);
+    @GetMapping("/with-emotions/user/{userId}")
+    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getDiariesWithTargetEmotionsByUserId(@PathVariable String userId) {
+        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByUserId(userId);
+        return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
-    @GetMapping("/{diary_id}") // for testing
-    public ResponseEntity<Optional<Diary>> getSingleDiary(@PathVariable int diary_id) {
-        return new ResponseEntity<Optional<Diary>>(diaryService.singleDiary(diary_id), HttpStatus.OK);
+    @GetMapping("/user/{userId}/month/{month}")
+    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotionsByMonthAndUserId(
+            @PathVariable String userId, @PathVariable int month) {
+        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByMonthAndUserId(userId, month);
+        return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
-    // @GetMapping("/with-emotions") // this returns array, bad
-    // public ResponseEntity<List<Object[]>> getAllDiariesWithTargetEmotions() {
-    //     return new ResponseEntity<>(diaryService.allDiariesWithTargetEmotions(), HttpStatus.OK);
-    // }
-
-    @GetMapping("/with-emotions")
-    public ResponseEntity<List<DiaryRequest>> getAllDiariesWithTargetEmotions() {
-        return new ResponseEntity<>(diaryService.allDiariesWithTargetEmotions(), HttpStatus.OK);
-    }
-
-    @GetMapping("/with-emotions/{diary_id}")
-    public ResponseEntity<Optional<DiaryRequest>> getSingleDiaryWithTargetEmotions(@PathVariable int diary_id) {
-        return new ResponseEntity<>(diaryService.singleDiaryWithTargetEmotions(diary_id), HttpStatus.OK);
-    }
-
-    @PostMapping
-    public ResponseEntity<Diary> createDiary(@RequestBody DiaryRequest request) {
-        Diary createdDiary = diaryService.createDiary(request);
+    @PostMapping("/with-emotions")
+    public ResponseEntity<DiaryWithTargetEmotionsDTO> createDiaryWithTargetEmotions(@RequestBody DiaryWithTargetEmotionsDTO request) {
+        DiaryWithTargetEmotionsDTO createdDiary = diaryService.createDiaryWithTargetEmotions(request);
         return new ResponseEntity<>(createdDiary, HttpStatus.CREATED);
     }
-
-    // @GetMapping("/month/{month}")
-    // public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotionsByMonth(@PathVariable int month) {
-    //     List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByMonth(month);
-    //     return new ResponseEntity<>(diaries, HttpStatus.OK);
-    // }
 
 }

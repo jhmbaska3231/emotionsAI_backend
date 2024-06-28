@@ -1,7 +1,9 @@
 // service layer: to hold business logic
+// convert the fetched data into the DiaryWithTargetEmotionsDTO
 package com.example.fyp;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,37 +14,54 @@ public class DiaryService {
     @Autowired
     private DiaryRepository diaryRepository;
 
-    public List<Diary> allDiaries() { // for testing
-        return diaryRepository.findAll();
+    @Autowired
+    private UserRepository userRepository;
+
+    public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByUserId(String userId) {
+        List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByUserId(userId);
+        return diaries.stream().map(diary -> {
+            List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
+                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotionPercentage()))
+                    .collect(Collectors.toList());
+            return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
+        }).collect(Collectors.toList());
     }
 
-    public Optional<Diary> singleDiary(int diary_id) { // for testing
-        return diaryRepository.findById(diary_id);
+    public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByMonthAndUserId(String userId, int month) {
+        List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByMonthAndUserId(userId, month);
+        return diaries.stream().map(diary -> {
+            List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
+                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotionPercentage()))
+                    .collect(Collectors.toList());
+            return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
+        }).collect(Collectors.toList());
     }
 
-    // public List<Object[]> allDiariesWithTargetEmotions() { // this returns array, bad
-    //     return diaryRepository.findAllDiariesWithTargetEmotions();
-    // }
+    public DiaryWithTargetEmotionsDTO createDiaryWithTargetEmotions(DiaryWithTargetEmotionsDTO request) {
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-    public List<DiaryRequest> allDiariesWithTargetEmotions() {
-        return diaryRepository.findAllDiariesWithTargetEmotions();
-    }
-
-    public Optional<DiaryRequest> singleDiaryWithTargetEmotions(int diary_id) {
-        return diaryRepository.findDiaryWithTargetEmotionsById(diary_id);
-    }
-
-    public Diary createDiary(DiaryRequest request) {
         Diary diary = new Diary();
         diary.setDate(request.getDate());
-        diary.setInput_text(request.getInputText());
-        diary.setEmotional_intensity(request.getEmotionalIntensity());
-        diary.setOverall_sentiment(request.getOverallSentiment());
-        return diaryRepository.save(diary);
-    }
+        diary.setInputText(request.getInputText());
+        diary.setEmotionalIntensity(request.getEmotionalIntensity());
+        diary.setOverallSentiment(request.getOverallSentiment());
+        diary.setUser(user);
 
-    // public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByMonth(int month) {
-    //     return diaryRepository.findDiariesWithTargetEmotionsByMonth(month);
-    // }
+        List<TargetEmotion> targetEmotions = request.getTargetEmotionsList().stream()
+                .map(teRequest -> new TargetEmotion(teRequest.getEmotion(), teRequest.getEmotionPercentage()))
+                .collect(Collectors.toList());
+
+        targetEmotions.forEach(te -> te.setDiary(diary));
+        diary.setTargetEmotionsList(targetEmotions);
+
+        Diary savedDiary = diaryRepository.save(diary);
+
+        List<TargetEmotionDTO> targetEmotionsDTOList = savedDiary.getTargetEmotionsList().stream()
+                .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotionPercentage()))
+                .collect(Collectors.toList());
+
+        return new DiaryWithTargetEmotionsDTO(savedDiary, targetEmotionsDTOList);
+    }
 
 }

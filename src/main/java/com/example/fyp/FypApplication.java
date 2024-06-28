@@ -1,45 +1,50 @@
-// http://localhost:8080/
-
 package com.example.fyp;
 
-import java.io.File;
+// import java.io.File;
 
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import java.io.IOException;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@RestController
-
+@EnableScheduling
 public class FypApplication {
+// public class FypApplication implements CommandLineRunner {
+
+    // @Autowired
+    // private AudioToTextService audioToTextService;
 
 	public static void main(String[] args) {
-		// SpringApplication.run(FypApplication.class, args);
-		// DEMO
-		DeepPurple deepPurple = new DeepPurple();
-		// AudioToText audioToText = new AudioToText();
-		// File audioFile = new File("src\\test\\java\\com\\example\\fyp\\valid.wav");
-		try{
-			
-			// String transcription = audioToText.transcribeAudio(audioFile);
-			// System.out.println("Audio File Transcription: ");
-			//System.out.println(transcription);
-			String testTranscription = "Do you want to grab a burger? I heard the burger shop down the road is really great. Damn. I really don't know.";
-			String analysis = deepPurple.analyzeEmotion(testTranscription, "paid");
-			System.out.println("Emotional Analysis");
-			System.out.println(analysis);
+		
+		SpringApplication.run(FypApplication.class, args);
 
-		}catch (IOException e){
-			System.out.println(e);
-		}
+        // sample usage to test transcribe
+		// try{
+        //     String inputText = "today when i went out it started to rain... then i missed the bus... and was late for work. but thankfully i am able to walk";
+        //     String output = DeepPurple.analyzeEmotion(inputText);
+        //     System.out.println(output);
+        // } catch (Exception io){
+        //     System.out.println(io);
+        // }
 
 	}
 
-	@GetMapping("/")
-	public String apiRoot() {
-		return "hello world...";
-	}
+    // sample usage to test convert audio to text
+    // @Override
+    // public void run(String... args) throws Exception {
+    //     File audioFile = new File("/test audio.mp4");
+    //     if (audioFile.exists()) {
+    //         try {
+    //             String transcript = audioToTextService.convertAudioToText(audioFile);
+    //             System.out.println("Transcription: " + transcript);
+    //         } catch (Exception e) {
+    //             e.printStackTrace();
+    //         }
+    //     } else {
+    //         System.out.println("Audio file not found!");
+    //     }
+    // }
 
 }
