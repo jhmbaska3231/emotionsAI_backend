@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -40,7 +41,8 @@ public class Form {
     @Column(name = "subject")
     private String subject;
 
-    @Column(name = "message")
+    @Lob
+    @Column(name = "message", columnDefinition = "TEXT")
     private String message;
 
     @Column(name = "read_status")

@@ -13,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -36,7 +37,8 @@ public class Diary {
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "input_text")
+    @Lob
+    @Column(name = "input_text", columnDefinition = "TEXT")
     private String inputText;
 
     @Column(name = "emotional_intensity")
