@@ -2,6 +2,7 @@
 // convert the fetched data into the DiaryWithTargetEmotionsDTO
 package com.example.fyp;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,19 @@ public class DiaryService {
 
     public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByMonthAndUserId(String userId, int month) {
         List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByMonthAndUserId(userId, month);
+        return diaries.stream().map(diary -> {
+            List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
+                    .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotionPercentage()))
+                    .collect(Collectors.toList());
+            return new DiaryWithTargetEmotionsDTO(diary, targetEmotionsList);
+        }).collect(Collectors.toList());
+    }
+
+    public List<DiaryWithTargetEmotionsDTO> allDiariesWithTargetEmotionsByLast6MonthsAndUserId(String userId, int month) {
+        LocalDate endDate = LocalDate.of(LocalDate.now().getYear(), month, 1).withDayOfMonth(LocalDate.of(LocalDate.now().getYear(), month, 1).lengthOfMonth());
+        LocalDate startDate = endDate.minusMonths(5).withDayOfMonth(1);
+        
+        List<Diary> diaries = diaryRepository.findDiariesWithTargetEmotionsByLast6MonthsAndUserId(userId, startDate, endDate);
         return diaries.stream().map(diary -> {
             List<TargetEmotionDTO> targetEmotionsList = diary.getTargetEmotionsList().stream()
                     .map(te -> new TargetEmotionDTO(te.getEmotion(), te.getEmotionPercentage()))

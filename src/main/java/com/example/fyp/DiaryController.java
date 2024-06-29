@@ -33,6 +33,13 @@ public class DiaryController {
         return new ResponseEntity<>(diaries, HttpStatus.OK);
     }
 
+    @GetMapping("/user/{userId}/last6months/{month}")
+    public ResponseEntity<List<DiaryWithTargetEmotionsDTO>> getAllDiariesWithTargetEmotionsByLast6MonthsAndUserId(
+            @PathVariable String userId, @PathVariable int month) {
+        List<DiaryWithTargetEmotionsDTO> diaries = diaryService.allDiariesWithTargetEmotionsByLast6MonthsAndUserId(userId, month);
+        return new ResponseEntity<>(diaries, HttpStatus.OK);
+    }
+
     @PostMapping("/with-emotions")
     public ResponseEntity<DiaryWithTargetEmotionsDTO> createDiaryWithTargetEmotions(@RequestBody DiaryWithTargetEmotionsDTO request) {
         DiaryWithTargetEmotionsDTO createdDiary = diaryService.createDiaryWithTargetEmotions(request);
