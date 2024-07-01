@@ -73,14 +73,32 @@ public class TranscribeService {
 
         OkHttpClient client = new OkHttpClient();
 
-        // Creating Json Objects for System and User
+         // Updated prompt
+         String paidPrompt = "You will be provided a text. Your task is to analyze the provided text and determine the emotion(s) it conveys from a provided list of emotions. <emotions_list> \"””Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\"”” </emotions_list> \n\n" +
+                "Use the following step-by-step instructions to each sentence in the text. Enclose all your work for these instructions in a similar structure as the original text.\n\n" +
+                "Step 1 - Identify the suitable emotion(s) presented.\n\n" +
+                "Step 2 - Assess the emotional intensity as \"high,\" \"medium,\" or \"low\".\n\n" +
+                "Step 3 - Indicate the sentiment as \"positive,\" \"neutral,\" or \"negative\".\n\n" +
+                "Step 4 - Add a weight to the detected emotion. The weight measures how much the emotion contributes to the overall sentiment of the text.\n\n" +
+                "Step 5 - At the end of the sentence, in parentheses, display the emotion detected, the emotional intensity, the sentiment and the weight of the emotion relative to the whole text. For example, (Joy, high, positive, 34%)\n\n" +
+                "Annotated Text refers to your resultant work for the instructions you followed previously.\n\n" +
+                "Detected Emotions is a list of all the detected emotions and their weightage relative to the whole text. i.e. Joy (50%), Sadness (50%)\n\n" +
+                "Overall Emotional Intensity is the average intensity of the whole text.\n\n" +
+                "Overall Sentiment Intensity is the average sentiment of the whole text.\n\n" +
+                "Only respond with this template enclosed in triple quotation:\n" +
+                "”””\n" +
+                "Annotated Text: {}\n" +
+                "Detected Emotions(s): x (a%), y (b%), z (c%)\n" +
+                 "Overall Emotional Intensity: d\n" +
+                "Overall Sentiment: e\n" +
+                "”””";
+
+        // System JsonObject
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", "Analyze the provided input text and determine the emotion(s) it conveys from the list of emotions. After identifying the suitable emotion(s), assess the emotional intensity of the text as \"high,\" \"medium,\" or \"low. Next, indicate the overall sentiment of the text as \"positive,\" \"neutral,\" or \"negative.\" Finally, for each emotion detected above, please add a weightage percentage point beside it, the sum of the percentage point of all emotions must add up to 100. Here is the template for the output (a,b,c are the percentages that sum up to 100): \"Target Emotion(s): x (a%), y (b%), z (c%) \\n" + //
-        "Emotional Intensity: xx \\n" + //
-        "Overall Sentiment: yy\" \r\n" + //
-        "Emotions List: \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\". Only choose from the emotions list for your answer.");
+        systemMessage.addProperty("content", paidPrompt);
 
+        // User JsonObject
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", "user");
         userMessage.addProperty("content", text);
@@ -102,14 +120,21 @@ public class TranscribeService {
                 .addHeader("Content-Type", "application/json")
                 .build();
 
-        Response response = client.newCall(request).execute();
-        String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
-        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-        return jsonObject.get("choices").getAsJsonArray()
-                         .get(0).getAsJsonObject()
-                         .get("message").getAsJsonObject()
-                         .get("content").getAsString();
-                         
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+        
+            String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
+            JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+            return jsonObject.get("choices").getAsJsonArray()
+                             .get(0).getAsJsonObject()
+                             .get("message").getAsJsonObject()
+                             .get("content").getAsString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "An error occurred while analyzing emotion.";
+        }
     }
 
 }
