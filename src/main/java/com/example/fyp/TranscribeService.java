@@ -28,7 +28,7 @@ public class TranscribeService {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${openai.api.key}")
+    // @Value("${openai.api.key}")
     private String apiKey;
 
     private static final String apiUrl = "https://api.openai.com/v1/chat/completions";
@@ -113,7 +113,7 @@ public class TranscribeService {
         messages.add(userMessage);
 
         JsonObject requestBodyJson = new JsonObject();
-        requestBodyJson.addProperty("model", "gpt-3.5-turbo-0125"); // Using gpt-3.5
+        requestBodyJson.addProperty("model", "ft:gpt-3.5-turbo-0125:personal::9iRzBgVN"); // Using gpt-3.5
         requestBodyJson.add("messages", messages);
 
         RequestBody body = RequestBody.create(requestBodyJson.toString(), MediaType.parse("application/json"));
