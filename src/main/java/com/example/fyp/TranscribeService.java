@@ -30,6 +30,7 @@ public class TranscribeService {
 
     @Value("${openai.api.key}")
     private String apiKey;
+    
 
     private static final String apiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -73,13 +74,37 @@ public class TranscribeService {
 
         OkHttpClient client = new OkHttpClient();
 
-        // Creating Json Objects for System and User
+        String prompt = "###Instruction###\n" +
+                        "\n" +
+                        "You will be provided a text. Your task is to analyze the provided text and determine the emotion(s) it conveys from the provided list of emotions.\n" +
+                        "\n" +
+                        "###Emotions List###\n" +
+                        "\"Joy, Happiness, Sadness, Anger, Fear, Surprise, Disgust, Contempt, Love, Trust, Anticipation, Guilt, Shame, Excitement, Gratitude, Envy, Jealousy, Empathy, Compassion, Pride, Hope, Confusion, Regret, Loneliness, Boredom, Satisfaction, Anxiety\"\n" +
+                        "\n" +
+                        "###Steps###\n" +
+                        "1. Identify the suitable emotion(s) presented in each sentence.\n" +
+                        "2. Assess the emotional intensity as \"high,\" \"medium,\" or \"low.\"\n" +
+                        "3. Indicate the sentiment as \"positive,\" \"neutral,\" or \"negative.\"\n" +
+                        "4. Add a weight to the detected emotion. The weight measures how much the emotion contributes to the overall sentiment of the text.\n" +
+                        "5. At the end of each sentence, in parentheses, display the emotion detected, the emotional intensity, the sentiment, and the weight of the emotion relative to the whole text. For example, (Joy, high, positive, 34%)\n" +
+                        "\n" +
+                        "###Output Template###\n" +
+                        "Annotated Text: {}\n" +
+                        "Detected Emotion(s): x (a%), y (b%), z (c%)\n" +
+                        "Overall Emotional Intensity: d\n" +
+                        "Overall Sentiment: e\n" +
+                        "\n" +
+                        "###Example###\n" +
+                        "Text: \"I felt great joy when I received the news, but also a tinge of sadness.\"\n" +
+                        "\n" +
+                        "Annotated Text: I felt great joy when I received the news, but also a tinge of sadness. (Joy, high, positive, 70%) (Sadness, low, negative, 30%)\n" +
+                        "Detected Emotions: Joy (70%), Sadness (30%)\n" +
+                        "Overall Emotional Intensity: high\n" +
+                        "Overall Sentiment: mixed (positive and negative)\n";
+
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", "Analyze the provided input text and determine the emotion(s) it conveys from the list of emotions. After identifying the suitable emotion(s), assess the emotional intensity of the text as \"high,\" \"medium,\" or \"low. Next, indicate the overall sentiment of the text as \"positive,\" \"neutral,\" or \"negative.\" Finally, for each emotion detected above, please add a weightage percentage point beside it, the sum of the percentage point of all emotions must add up to 100. Here is the template for the output (a,b,c are the percentages that sum up to 100): \"Target Emotion(s): x (a%), y (b%), z (c%) \\n" + //
-        "Emotional Intensity: xx \\n" + //
-        "Overall Sentiment: yy\" \r\n" + //
-        "Emotions List: \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\". Only choose from the emotions list for your answer.");
+        systemMessage.addProperty("content", prompt);
 
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", "user");
@@ -90,7 +115,7 @@ public class TranscribeService {
         messages.add(userMessage);
 
         JsonObject requestBodyJson = new JsonObject();
-        requestBodyJson.addProperty("model", "gpt-3.5-turbo-0125"); // Using gpt-3.5
+        requestBodyJson.addProperty("model", "ft:gpt-3.5-turbo-0125:personal::9jACErVy");
         requestBodyJson.add("messages", messages);
 
         RequestBody body = RequestBody.create(requestBodyJson.toString(), MediaType.parse("application/json"));
@@ -98,18 +123,29 @@ public class TranscribeService {
         Request request = new Request.Builder()
                 .url(apiUrl)
                 .post(body)
-                .addHeader("Authorization", "Bearer " + apiKey)
+                .addHeader("Authorization", "Bearer " + "sk-proj-fvYUlxUBz1u1HFy6V8ogT3BlbkFJ5UpcEXlVUmXVkHBivGBW")
                 .addHeader("Content-Type", "application/json")
                 .build();
 
         Response response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            throw new IOException("Unexpected code " + response);
+        }
+
         String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-        return jsonObject.get("choices").getAsJsonArray()
-                         .get(0).getAsJsonObject()
-                         .get("message").getAsJsonObject()
-                         .get("content").getAsString();
-                         
+
+        if (jsonObject.has("choices") && !jsonObject.get("choices").isJsonNull()) {
+            JsonArray choicesArray = jsonObject.get("choices").getAsJsonArray();
+            if (choicesArray.size() > 0) {
+                JsonObject messageObject = choicesArray.get(0).getAsJsonObject().get("message").getAsJsonObject();
+                if (messageObject != null && messageObject.has("content")) {
+                    return messageObject.get("content").getAsString();
+                }
+            }
+        }
+
+        throw new IOException("Invalid response from the API");
     }
 
 }
