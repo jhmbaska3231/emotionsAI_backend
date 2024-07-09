@@ -29,7 +29,7 @@ public class TranscribeService {
     private UserRepository userRepository;
 
     // @Value("${openai.api.key}")
-    private String apiKey;
+    private String apiKey = "sk-proj-fvYUlxUBz1u1HFy6V8ogT3BlbkFJ5UpcEXlVUmXVkHBivGBW";
 
     private static final String apiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -72,6 +72,7 @@ public class TranscribeService {
     public String analyzeEmotion(String text) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
+        System.out.println(apiKey);
 
         // Updated prompt
         String paidPrompt = "###Instruction###\n\n" +
@@ -113,7 +114,7 @@ public class TranscribeService {
         messages.add(userMessage);
 
         JsonObject requestBodyJson = new JsonObject();
-        requestBodyJson.addProperty("model", "ft:gpt-3.5-turbo-0125:personal::9iRzBgVN"); // Using gpt-3.5
+        requestBodyJson.addProperty("model", "gpt-3.5-turbo-0125"); // Using gpt-3.5
         requestBodyJson.add("messages", messages);
 
         RequestBody body = RequestBody.create(requestBodyJson.toString(), MediaType.parse("application/json"));
@@ -127,7 +128,7 @@ public class TranscribeService {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response);
+                throw new IOException("Unexpected code " + response + ": " + response.body().string());
             }
         
             String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");

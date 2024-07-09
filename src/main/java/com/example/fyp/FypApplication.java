@@ -18,7 +18,7 @@ public class FypApplication {
 
 	public static void main(String[] args) {
 		
-		// SpringApplication.run(FypApplication.class, args);
+		//SpringApplication.run(FypApplication.class, args);
 
         // sample usage to test transcribe
 		// try{
