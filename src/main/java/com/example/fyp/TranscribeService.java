@@ -72,7 +72,7 @@ public class TranscribeService {
     public String analyzeEmotion(String text) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
-        System.out.println(apiKey);
+        System.out.println("\napi key: " + apiKey);
 
         // Updated prompt
         String paidPrompt = "###Instruction###\n\n" +
@@ -141,6 +141,7 @@ public class TranscribeService {
             e.printStackTrace();
             return "An error occurred while analyzing emotion.";
         }
+        
     }
 
 }
