@@ -28,8 +28,8 @@ public class TranscribeService {
     @Autowired
     private UserRepository userRepository;
 
-    // @Value("${openai.api.key}")
-    private String apiKey = "sk-proj-fvYUlxUBz1u1HFy6V8ogT3BlbkFJ5UpcEXlVUmXVkHBivGBW";
+    @Value("${openai.api.key}")
+    private String apiKey;
 
     private static final String apiUrl = "https://api.openai.com/v1/chat/completions";
 
