@@ -28,8 +28,8 @@ public class TranscribeService {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${openai.api.key}")
-    private String apiKey;
+    // @Value("${openai.api.key}")
+    private String apiKey = "sk-proj-fvYUlxUBz1u1HFy6V8ogT3BlbkFJ5UpcEXlVUmXVkHBivGBW";
 
     private static final String apiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -72,15 +72,39 @@ public class TranscribeService {
     public String analyzeEmotion(String text) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
+        System.out.println(apiKey);
 
-        // Creating Json Objects for System and User
+        // Updated prompt
+        String paidPrompt = "###Instruction###\n\n" +
+            "You will be provided a text. Your task is to analyze the provided text and determine the emotion(s) it conveys from the provided list of emotions.\n\n" +
+            "###Emotions List###\n" +
+            "\"Joy, Happiness, Sadness, Anger, Fear, Surprise, Disgust, Contempt, Love, Trust, Anticipation, Guilt, Shame, Excitement, Gratitude, Envy, Jealousy, Empathy, Compassion, Pride, Hope, Confusion, Regret, Loneliness, Boredom, Satisfaction, Anxiety\"\n\n" +
+            "###Steps###\n" +
+            "1. Identify the suitable emotion(s) presented in each sentence.\n" +
+            "2. Assess the emotional intensity as \"high,\" \"medium,\" or \"low.\"\n" +
+            "3. Indicate the sentiment as \"positive,\" \"neutral,\" or \"negative.\"\n" +
+            "4. Add a weight to the detected emotion. The weight measures how much the emotion contributes to the overall sentiment of the text.\n" +
+            "5. At the end of each sentence, in parentheses, display the emotion detected, the emotional intensity, the sentiment, and the weight of the emotion relative to the whole text. For example, (Joy, high, positive, 34%)\n\n" +
+            "###Output Template###\n" +
+            "\"\"\"\n" +
+            "Annotated Text: {}\n" +
+            "Detected Emotion(s): x (a%), y (b%), z (c%)\n" +
+            "Overall Emotional Intensity: d\n" +
+            "Overall Sentiment: e\n" +
+            "\"\"\"\n\n" +
+            "###Example###\n" +
+            "Text: \"I felt great joy when I received the news, but also a tinge of sadness.\"\n\n" +
+            "Annotated Text: I felt great joy when I received the news, but also a tinge of sadness. (Joy, high, positive, 70%) (Sadness, low, negative, 30%)\n" +
+            "Detected Emotions: Joy (70%), Sadness (30%)\n" +
+            "Overall Emotional Intensity: high\n" +
+            "Overall Sentiment: mixed (positive and negative)";
+
+        // System JsonObject
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", "Analyze the provided input text and determine the emotion(s) it conveys from the list of emotions. After identifying the suitable emotion(s), assess the emotional intensity of the text as \"high,\" \"medium,\" or \"low. Next, indicate the overall sentiment of the text as \"positive,\" \"neutral,\" or \"negative.\" Finally, for each emotion detected above, please add a weightage percentage point beside it, the sum of the percentage point of all emotions must add up to 100. Here is the template for the output (a,b,c are the percentages that sum up to 100): \"Target Emotion(s): x (a%), y (b%), z (c%) \\n" + //
-        "Emotional Intensity: xx \\n" + //
-        "Overall Sentiment: yy\" \r\n" + //
-        "Emotions List: \"Joy Happiness Sadness Anger Fear Surprise Disgust Contempt Love Trust Anticipation Guilt Shame Excitement Gratitude Envy Jealousy Empathy Compassion Pride Hope Confusion Regret Loneliness Boredom Satisfaction Anxiety\". Only choose from the emotions list for your answer.");
+        systemMessage.addProperty("content", paidPrompt);
 
+        // User JsonObject
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", "user");
         userMessage.addProperty("content", text);
@@ -102,14 +126,21 @@ public class TranscribeService {
                 .addHeader("Content-Type", "application/json")
                 .build();
 
-        Response response = client.newCall(request).execute();
-        String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
-        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-        return jsonObject.get("choices").getAsJsonArray()
-                         .get(0).getAsJsonObject()
-                         .get("message").getAsJsonObject()
-                         .get("content").getAsString();
-                         
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response + ": " + response.body().string());
+            }
+        
+            String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
+            JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+            return jsonObject.get("choices").getAsJsonArray()
+                             .get(0).getAsJsonObject()
+                             .get("message").getAsJsonObject()
+                             .get("content").getAsString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "An error occurred while analyzing emotion.";
+        }
     }
 
 }
