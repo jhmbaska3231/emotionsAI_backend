@@ -72,7 +72,6 @@ public class TranscribeService {
     public String analyzeEmotion(String text) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
-        System.out.println("\napi key: " + apiKey);
 
         // Updated prompt
         String paidPrompt = "###Instruction###\n\n" +
@@ -114,7 +113,8 @@ public class TranscribeService {
         messages.add(userMessage);
 
         JsonObject requestBodyJson = new JsonObject();
-        requestBodyJson.addProperty("model", "gpt-3.5-turbo-0125"); // Using gpt-3.5
+        // requestBodyJson.addProperty("model", "gpt-3.5-turbo-0125"); // using default gpt-3.5 model
+        requestBodyJson.addProperty("model", "ft:gpt-3.5-turbo-0613:personal::9j0o4fvd"); // using fine tuned model
         requestBodyJson.add("messages", messages);
 
         RequestBody body = RequestBody.create(requestBodyJson.toString(), MediaType.parse("application/json"));
@@ -141,7 +141,7 @@ public class TranscribeService {
             e.printStackTrace();
             return "An error occurred while analyzing emotion.";
         }
-        
+
     }
 
 }
