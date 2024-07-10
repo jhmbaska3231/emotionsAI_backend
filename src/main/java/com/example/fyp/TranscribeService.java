@@ -73,35 +73,39 @@ public class TranscribeService {
 
         OkHttpClient client = new OkHttpClient();
 
-        // Updated prompt
-        String paidPrompt = "###Instruction###\n\n" +
-            "You will be provided a text. Your task is to analyze the provided text and determine the emotion(s) it conveys from the provided list of emotions.\n\n" +
-            "###Emotions List###\n" +
-            "\"Joy, Happiness, Sadness, Anger, Fear, Surprise, Disgust, Contempt, Love, Trust, Anticipation, Guilt, Shame, Excitement, Gratitude, Envy, Jealousy, Empathy, Compassion, Pride, Hope, Confusion, Regret, Loneliness, Boredom, Satisfaction, Anxiety\"\n\n" +
-            "###Steps###\n" +
-            "1. Identify the suitable emotion(s) presented in each sentence.\n" +
-            "2. Assess the emotional intensity as \"high,\" \"medium,\" or \"low.\"\n" +
-            "3. Indicate the sentiment as \"positive,\" \"neutral,\" or \"negative.\"\n" +
-            "4. Add a weight to the detected emotion. The weight measures how much the emotion contributes to the overall sentiment of the text.\n" +
-            "5. At the end of each sentence, in parentheses, display the emotion detected, the emotional intensity, the sentiment, and the weight of the emotion relative to the whole text. For example, (Joy, high, positive, 34%)\n\n" +
-            "###Output Template###\n" +
-            "\"\"\"\n" +
-            "Annotated Text: {}\n" +
-            "Detected Emotion(s): x (a%), y (b%), z (c%)\n" +
-            "Overall Emotional Intensity: d\n" +
-            "Overall Sentiment: e\n" +
-            "\"\"\"\n\n" +
-            "###Example###\n" +
-            "Text: \"I felt great joy when I received the news, but also a tinge of sadness.\"\n\n" +
-            "Annotated Text: I felt great joy when I received the news, but also a tinge of sadness. (Joy, high, positive, 70%) (Sadness, low, negative, 30%)\n" +
-            "Detected Emotions: Joy (70%), Sadness (30%)\n" +
-            "Overall Emotional Intensity: high\n" +
-            "Overall Sentiment: mixed (positive and negative)";
+        // Creating Json Objects for System and User
+        String prompt = "###Instruction###\n" +
+        "\n" +
+        "You will be provided a text. Your task is to analyze the provided text and determine the emotion(s) it conveys from the provided list of emotions.\n" +
+        "\n" +
+        "###Emotions List###\n" +
+        "\"Joy, Happiness, Sadness, Anger, Fear, Surprise, Disgust, Contempt, Love, Trust, Anticipation, Guilt, Shame, Excitement, Gratitude, Envy, Jealousy, Empathy, Compassion, Pride, Hope, Confusion, Regret, Loneliness, Boredom, Satisfaction, Anxiety\"\n" +
+        "\n" +
+        "###Steps###\n" +
+        "1. Identify the suitable emotion(s) presented in each sentence.\n" +
+        "2. Assess the emotional intensity as \"high,\" \"medium,\" or \"low.\"\n" +
+        "3. Indicate the sentiment as \"positive,\" \"neutral,\" or \"negative.\"\n" +
+        "4. Add a weight to the detected emotion. The weight measures how much the emotion contributes to the overall sentiment of the text.\n" +
+        "5. At the end of each sentence, in parentheses, display the emotion detected, the emotional intensity, the sentiment, and the weight of the emotion relative to the whole text. For example, (Joy, high, positive, 34%)\n" +
+        "\n" +
+        "###Output Template###\n" +
+        "Annotated Text: {}\n" +
+        "Detected Emotion(s): x (a%), y (b%), z (c%)\n" +
+        "Overall Emotional Intensity: d\n" +
+        "Overall Sentiment: e\n" +
+        "\n" +
+        "###Example###\n" +
+        "Text: \"I felt great joy when I received the news, but also a tinge of sadness.\"\n" +
+        "\n" +
+        "Annotated Text: I felt great joy when I received the news, but also a tinge of sadness. (Joy, high, positive, 70%) (Sadness, low, negative, 30%)\n" +
+        "Detected Emotions: Joy (70%), Sadness (30%)\n" +
+        "Overall Emotional Intensity: high\n" +
+        "Overall Sentiment: mixed (positive and negative)\n";
 
         // System JsonObject
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", paidPrompt);
+        systemMessage.addProperty("content", prompt);
 
         // User JsonObject
         JsonObject userMessage = new JsonObject();
@@ -114,7 +118,7 @@ public class TranscribeService {
 
         JsonObject requestBodyJson = new JsonObject();
         // requestBodyJson.addProperty("model", "gpt-3.5-turbo-0125"); // using default gpt-3.5 model
-        requestBodyJson.addProperty("model", "ft:gpt-3.5-turbo-0613:personal::9j0o4fvd"); // using fine tuned model
+        requestBodyJson.addProperty("model", "ft:gpt-3.5-turbo-0125:personal::9jACErVy"); // using fine tuned model
         requestBodyJson.add("messages", messages);
 
         RequestBody body = RequestBody.create(requestBodyJson.toString(), MediaType.parse("application/json"));
@@ -126,21 +130,26 @@ public class TranscribeService {
                 .addHeader("Content-Type", "application/json")
                 .build();
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response + ": " + response.body().string());
-            }
-        
-            String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
-            JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-            return jsonObject.get("choices").getAsJsonArray()
-                             .get(0).getAsJsonObject()
-                             .get("message").getAsJsonObject()
-                             .get("content").getAsString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "An error occurred while analyzing emotion.";
+        Response response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            throw new IOException("Unexpected code " + response);
         }
+
+        String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+
+        if (jsonObject.has("choices") && !jsonObject.get("choices").isJsonNull()) {
+            JsonArray choicesArray = jsonObject.get("choices").getAsJsonArray();
+            
+            if (choicesArray.size() > 0) {
+                JsonObject messageObject = choicesArray.get(0).getAsJsonObject().get("message").getAsJsonObject();
+                if (messageObject != null && messageObject.has("content")) {
+                    return messageObject.get("content").getAsString();
+                }
+            }
+        }
+
+        throw new IOException("Invalid response from the API");
 
     }
 
