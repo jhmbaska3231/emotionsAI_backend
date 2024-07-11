@@ -98,7 +98,7 @@ public class TranscribeService {
         "Text: \"I felt great joy when I received the news, but also a tinge of sadness.\"\n" +
         "\n" +
         "Annotated Text: I felt great joy when I received the news, but also a tinge of sadness. (Joy, high, positive, 70%) (Sadness, low, negative, 30%)\n" +
-        "Detected Emotions: Joy (70%), Sadness (30%)\n" +
+        "Detected Emotion(s): Joy (70%), Sadness (30%)\n" +
         "Overall Emotional Intensity: high\n" +
         "Overall Sentiment: mixed (positive and negative)\n";
 
