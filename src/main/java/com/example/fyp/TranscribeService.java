@@ -83,8 +83,8 @@ public class TranscribeService {
         "\n" +
         "###Steps###\n" +
         "1. Identify the suitable emotion(s) presented in each sentence.\n" +
-        "2. Assess the emotional intensity as \"high,\" \"medium,\" or \"low.\"\n" +
-        "3. Indicate the sentiment as \"positive,\" \"neutral,\" or \"negative.\"\n" +
+        "2. Assess the emotional intensity as \"High,\" \"Medium,\" or \"Low.\"\n" +
+        "3. Indicate the sentiment as \"Positive,\" \"Neutral,\" or \"Negative.\"\n" +
         "4. Add a weight to the detected emotion. The weight measures how much the emotion contributes to the overall sentiment of the text.\n" +
         "5. At the end of each sentence, in parentheses, display the emotion detected, the emotional intensity, the sentiment, and the weight of the emotion relative to the whole text. For example, (Joy, high, positive, 34%)\n" +
         "\n" +
@@ -99,8 +99,8 @@ public class TranscribeService {
         "\n" +
         "Annotated Text: I felt great joy when I received the news, but also a tinge of sadness. (Joy, high, positive, 70%) (Sadness, low, negative, 30%)\n" +
         "Detected Emotion(s): Joy (70%), Sadness (30%)\n" +
-        "Overall Emotional Intensity: high\n" +
-        "Overall Sentiment: mixed (positive and negative)\n";
+        "Overall Emotional Intensity: High\n" +
+        "Overall Sentiment: Mixed (Positive and Negative)\n";
 
         // System JsonObject
         JsonObject systemMessage = new JsonObject();
