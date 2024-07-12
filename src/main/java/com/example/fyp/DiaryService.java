@@ -60,6 +60,7 @@ public class DiaryService {
         diary.setInputText(request.getInputText());
         diary.setEmotionalIntensity(request.getEmotionalIntensity());
         diary.setOverallSentiment(request.getOverallSentiment());
+        diary.setExplanation(request.getExplanation());
         diary.setUser(user);
 
         List<TargetEmotion> targetEmotions = request.getTargetEmotionsList().stream()
