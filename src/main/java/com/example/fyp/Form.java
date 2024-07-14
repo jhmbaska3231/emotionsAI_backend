@@ -45,7 +45,7 @@ public class Form {
     @Column(name = "message", columnDefinition = "TEXT")
     private String message;
 
-    @Column(name = "read_status", nullable = false)
-    private boolean readStatus = false; // default is 'unread'
+    @Column(name = "read_status")
+    private boolean readStatus = false;
     
 }
