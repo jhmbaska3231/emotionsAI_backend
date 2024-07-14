@@ -48,7 +48,7 @@ public class UserService {
         userRepository.delete(freeUser);
 
         // save the new PaidUser
-        PaidUser savedPaidUser = userRepository.save(paidUser);        
+        PaidUser savedPaidUser = userRepository.save(paidUser);     
 
         return savedPaidUser;
     }
