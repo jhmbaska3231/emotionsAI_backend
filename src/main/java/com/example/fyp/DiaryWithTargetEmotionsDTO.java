@@ -31,6 +31,6 @@ public class DiaryWithTargetEmotionsDTO {
         this.explanation = diary.getExplanation();
         this.targetEmotionsList = targetEmotionsList;
         this.userId = diary.getUser().getUserId();
-    }    
+    }
 
 }
