@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +39,16 @@ public class UserController {
         User user = convertToEntity(userDTO);
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUserDetails(@PathVariable String userId) {
+        UserDTO userDetails = userService.getUserDetails(userId);
+        if (userDetails != null) {
+            return ResponseEntity.ok(userDetails);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/{userId}/upgrade")
