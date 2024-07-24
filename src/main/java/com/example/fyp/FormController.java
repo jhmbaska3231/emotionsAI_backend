@@ -1,6 +1,7 @@
 package com.example.fyp;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,8 @@ public class FormController {
     }
 
     @PutMapping("/{id}/read")
-    public ResponseEntity<Form> updateReadStatus(@PathVariable int id, @RequestBody boolean readStatus) {
-        Optional<Form> updatedForm = formService.updateReadStatus(id, readStatus);
+    public ResponseEntity<Form> updateReadStatus(@PathVariable int id, @RequestBody Map<String, Boolean> readStatus) {
+        Optional<Form> updatedForm = formService.updateReadStatus(id, readStatus.get("readStatus"));
         return updatedForm.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
     
