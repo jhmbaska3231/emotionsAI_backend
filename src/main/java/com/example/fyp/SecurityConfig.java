@@ -60,7 +60,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/lambda/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/forms").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/forms").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/forms").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/forms/*/read").authenticated()
                 .anyRequest().authenticated()
             )
