@@ -17,27 +17,31 @@ public class SubscriptionService {
     @Autowired
     private SubscriptionRepository subscriptionRepository;
 
-    @Scheduled(cron = "0 0 0 * * ?") // cron schedule to run daily at midnight
-    @Transactional
-    public void checkAndRevertExpiredSubscriptions() {
-        LocalDate today = LocalDate.now();
-        List<Subscription> expiredSubscriptions = subscriptionRepository.findByEndDateBefore(today);
-
-        for (Subscription subscription : expiredSubscriptions) {
-            PaidUser paidUser = subscription.getPaidUser();
-            FreeUser freeUser = new FreeUser();
-            freeUser.setUserId(paidUser.getUserId());
-            freeUser.setName(paidUser.getName());
-            freeUser.setEmail(paidUser.getEmail());
-            freeUser.setDiariesList(paidUser.getDiariesList());
-            freeUser.setTranscribeCount(0); // Reset the transcribe count
-            freeUser.setLastTranscribeTime(null); // Reset the last transcribe time
-
-            userRepository.delete(paidUser);
-            userRepository.save(freeUser);
-
-            subscriptionRepository.delete(subscription); // Clean up the expired subscription
-        }
+    public Subscription getSubscriptionByUserId(String userId) {
+        return subscriptionRepository.findByPaidUser_UserId(userId);
     }
+
+    // @Scheduled(cron = "0 0 0 * * ?") // cron schedule to run daily at midnight
+    // @Transactional
+    // public void checkAndRevertExpiredSubscriptions() {
+    //     LocalDate today = LocalDate.now();
+    //     List<Subscription> expiredSubscriptions = subscriptionRepository.findByEndDateBefore(today);
+
+    //     for (Subscription subscription : expiredSubscriptions) {
+    //         PaidUser paidUser = subscription.getPaidUser();
+    //         FreeUser freeUser = new FreeUser();
+    //         freeUser.setUserId(paidUser.getUserId());
+    //         freeUser.setName(paidUser.getName());
+    //         freeUser.setEmail(paidUser.getEmail());
+    //         freeUser.setDiariesList(paidUser.getDiariesList());
+    //         freeUser.setTranscribeCount(0); // Reset the transcribe count
+    //         freeUser.setLastTranscribeTime(null); // Reset the last transcribe time
+
+    //         userRepository.delete(paidUser);
+    //         userRepository.save(freeUser);
+
+    //         subscriptionRepository.delete(subscription); // Clean up the expired subscription
+    //     }
+    // }
     
 }

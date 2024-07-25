@@ -21,7 +21,7 @@ public class WebConfig {
                             "https://emotionsai.space", 
                             "https://www.emotionsai.space"
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }
