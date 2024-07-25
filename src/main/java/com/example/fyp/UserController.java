@@ -57,6 +57,16 @@ public class UserController {
         return new ResponseEntity<>(upgradedUser, HttpStatus.OK);
     }
 
+    @PostMapping("/{userId}/unsubscribe")
+    public ResponseEntity<String> unsubscribe(@PathVariable String userId) {
+        try {
+            userService.unsubscribe(userId);
+            return ResponseEntity.ok("Unsubscribed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to unsubscribe");
+        }
+    }
+
     private User convertToEntity(UserDTO userDTO) {
         User user;
         switch (userDTO.getUserType()) {

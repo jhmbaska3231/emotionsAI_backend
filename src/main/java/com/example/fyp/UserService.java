@@ -16,6 +16,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
     @Transactional
     public User createUser(User user) {
         return userRepository.save(user);
@@ -68,6 +71,26 @@ public class UserService {
         PaidUser savedPaidUser = userRepository.save(paidUser);     
 
         return savedPaidUser;
+    }
+
+    public void unsubscribe(String userId) {
+        PaidUser paidUser = userRepository.findPaidUserByUserId(userId);
+        
+        if (paidUser != null) {
+            subscriptionRepository.delete(paidUser.getSubscription());
+            
+            // create a new FreeUser from the existing PaidUser
+            FreeUser freeUser = new FreeUser();
+            freeUser.setUserId(paidUser.getUserId());
+            freeUser.setName(paidUser.getName());
+            freeUser.setEmail(paidUser.getEmail());
+            freeUser.setDiariesList(paidUser.getDiariesList());
+            freeUser.setTranscribeCount(0);
+            freeUser.setLastTranscribeTime(null);
+            
+            userRepository.delete(paidUser);
+            userRepository.save(freeUser);
+        }
     }
 
 }
