@@ -67,6 +67,25 @@ public class UserController {
         }
     }
 
+    @GetMapping("/{userId}/transcribe-usage")
+    public ResponseEntity<TranscribeUsageDTO> getTranscribeUsage(@PathVariable String userId) {
+        TranscribeUsageDTO response = userService.getTranscribeUsage(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{userId}/update-freeuser-limit")
+    public ResponseEntity<String> updateFreeUserLimit(
+            @PathVariable String userId, 
+            @RequestBody TranscribeLimitDTO request) {
+        try {
+            userService.updateTranscribeLimit(userId, request.getTranscribeTime());
+            return ResponseEntity.ok("Transcribe limit updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating transcribe limit: " + e.getMessage());
+        }
+    }
+
     private User convertToEntity(UserDTO userDTO) {
         User user;
         switch (userDTO.getUserType()) {

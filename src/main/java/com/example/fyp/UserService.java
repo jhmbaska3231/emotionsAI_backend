@@ -1,6 +1,7 @@
 package com.example.fyp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,39 @@ public class UserService {
             userRepository.delete(paidUser);
             userRepository.save(freeUser);
         }
+    }
+
+    public TranscribeUsageDTO getTranscribeUsage(String userId) {
+        FreeUser user = (FreeUser) userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        int transcribeCount = user.getTranscribeCount();
+        boolean hasReachedLimit = checkIfReachedLimit(user);
+
+        return new TranscribeUsageDTO(transcribeCount, hasReachedLimit);
+    }
+
+    private boolean checkIfReachedLimit(FreeUser user) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime lastTranscribeTime = user.getLastTranscribeTime();
+        boolean isWithin24Hours = lastTranscribeTime != null && 
+                                  lastTranscribeTime.plusHours(24).isAfter(now);
+
+        if (isWithin24Hours) {
+            return user.getTranscribeCount() >= 3;
+        } else {
+            return false;
+        }
+    }
+
+    public void updateTranscribeLimit(String userId, LocalDateTime transcribeTime) {
+        FreeUser user = (FreeUser) userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setTranscribeCount(user.getTranscribeCount() + 1);
+        user.setLastTranscribeTime(transcribeTime);
+
+        userRepository.save(user);
     }
 
 }
