@@ -1,8 +1,10 @@
 package com.example.fyp;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,9 @@ public class SubscriptionService {
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    private UserService userService;
 
     public Subscription getSubscriptionByUserId(String userId) {
         return subscriptionRepository.findByPaidUser_UserId(userId);
@@ -38,6 +43,17 @@ public class SubscriptionService {
             return currentDate.plusYears(1);
         } else {
             throw new IllegalArgumentException("Invalid plan type");
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")  // cron expression for every day at midnight
+    @Transactional
+    public void checkForExpiredSubscriptions() {
+        LocalDate currentDate = LocalDate.now();
+        List<Subscription> expiredSubscriptions = subscriptionRepository.findByEndDateBefore(currentDate);
+
+        for (Subscription subscription : expiredSubscriptions) {
+            userService.unsubscribe(subscription.getPaidUser().getUserId());
         }
     }
     
