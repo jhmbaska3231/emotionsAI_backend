@@ -1,21 +1,34 @@
 package com.example.fyp;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+// import com.google.gson.JsonArray;
+// import com.google.gson.JsonObject;
+// import com.google.gson.JsonParser;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import io.github.sashirestela.openai.SimpleOpenAI;
+import io.github.sashirestela.openai.common.content.ContentPart;
+import io.github.sashirestela.openai.common.function.FunctionExecutor;
+import io.github.sashirestela.openai.domain.assistant.ThreadMessageRequest;
+import io.github.sashirestela.openai.domain.assistant.ThreadMessageRole;
+import io.github.sashirestela.openai.domain.assistant.ThreadRequest;
+import io.github.sashirestela.openai.domain.assistant.ThreadRun;
+import io.github.sashirestela.openai.domain.assistant.ThreadRunRequest;
+import io.github.sashirestela.openai.domain.assistant.ThreadRunSubmitOutputRequest;
+import io.github.sashirestela.openai.domain.assistant.ThreadRunSubmitOutputRequest.ToolOutput;
+import jakarta.annotation.PostConstruct;
 
-import org.apache.commons.io.IOUtils;
+// import okhttp3.MediaType;
+// import okhttp3.OkHttpClient;
+// import okhttp3.Request;
+// import okhttp3.RequestBody;
+// import okhttp3.Response;
+
+// import org.apache.commons.io.IOUtils;
 
 @Service
 public class TranscribeService {
@@ -23,97 +36,168 @@ public class TranscribeService {
     @Value("${openai.api.key}")
     private String apiKey;
 
-    private static final String apiUrl = "https://api.openai.com/v1/chat/completions";
+    // private static final String apiUrl = "https://api.openai.com/v1/chat/completions";
 
-    public String analyzeEmotion(String text) throws IOException {
+    private SimpleOpenAI openAIClient; // new code
+    // private SimpleOpenAI openAIClient = SimpleOpenAI.builder().apiKey(apiKey).build(); // new code
+    private FunctionExecutor functionExecutor; // Ensure this is initialized with your functions // new code
 
-        OkHttpClient client = new OkHttpClient();
-
-        // Creating Json Objects for System and User
-        String prompt = "###Instruction###\n" +
-            "You will be provided a text. Your task is to analyze the provided text to determine the emotion(s) it conveys from the provided list. Assess not only individual sentences but also consider the overall context and emotional flow of the entire text.\n" +
-            "\n" +
-            "###Emotions List###\n" +
-            "\"Joy, Happiness, Sadness, Anger, Fear, Surprise, Disgust, Contempt, Love, Trust, Anticipation, Guilt, Shame, Excitement, Gratitude, Envy, Jealousy, Empathy, Compassion, Pride, Hope, Confusion, Regret, Loneliness, Boredom, Satisfaction, Anxiety\"\n" +
-            "\n" +
-            "###Steps###\n" +
-            "1. **Identify the Suitable Emotion(s):** For each sentence and for the overall text, identify the emotion(s) expressed.\n" +
-            "2. **Assess Emotional Intensity:** Determine the emotional intensity (High, Medium, Low) for each detected emotion.\n" +
-            "   - *Define Criteria*: Provide specific linguistic or contextual cues to classify intensity levels.\n" +
-            "3. **Determine Sentiment:** Indicate the sentiment as \"Positive,\" \"Neutral,\" or \"Negative\" for each emotion.\n" +
-            "4. **Calculate Weight:** Assign a weight to each detected emotion relative to the entire text, based on the proportion of emotional words or intensity levels contributing to that emotion.\n" +
-            "   - *Normalization*: Ensure that the sum of weights across all emotions equals 100%.\n" +
-            "5. **Consider Emotional Flow:** Analyze how emotions develop or change throughout the text, noting any overarching themes or shifts.\n" +
-            "6. **Address Mixed Sentiments and Subtleties:** Evaluate and note any mixed sentiments, such as bittersweet or melancholic expressions, and consider subtleties like sarcasm or irony.\n" +
-            "\n" +
-            "###Output Template###\n" +
-            "```\n" +
-            "Annotated Text: {}\n" +
-            "Detected Emotion(s): x (a%), y (b%), z (c%)\n" +
-            "Overall Emotional Intensity: {majority intensity}\n" +
-            "Overall Sentiment: {majority sentiment} (i% Positive, j% Neutral, k% Negative)\n" +
-            "Explanation: Additional observations on emotional flow, mixed sentiments, or linguistic subtleties.\n" +
-            "```\n" +
-            "\n" +
-            "###Example###\n" +
-            "Text: \"I felt great joy when I received the news, but also a tinge of sadness.\"\n" +
-            "\n" +
-            "Annotated Text: I felt great joy when I received the news(Joy, High, Positive, 70%), but also a tinge of sadness. (Sadness, Low, Negative, 30%)\n" +
-            "Detected Emotion(s): Joy (70%), Sadness (30%)\n" +
-            "Overall Emotional Intensity: High\n" +
-            "Overall Sentiment: Positive (70% Positive, 0% Neutral, 30% Negative)\n" +
-            "Explanation: The joy overwhelms the sadness in emotional contribution, highlighting a predominantly positive reaction with a minor negative undertone.\n";
-
-        // System JsonObject
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", prompt);
-
-        // User JsonObject
-        JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", "user");
-        userMessage.addProperty("content", text);
-
-        JsonArray messages = new JsonArray();
-        messages.add(systemMessage);
-        messages.add(userMessage);
-
-        JsonObject requestBodyJson = new JsonObject();
-        // requestBodyJson.addProperty("model", "gpt-3.5-turbo-0125"); // using default gpt-3.5 model
-        // requestBodyJson.addProperty("model", "ft:gpt-3.5-turbo-0125:personal::9jACErVy"); // using fine tuned model
-        requestBodyJson.addProperty("model", "gpt-4o"); // using gpt-4o model
-        requestBodyJson.add("messages", messages);
-
-        RequestBody body = RequestBody.create(requestBodyJson.toString(), MediaType.parse("application/json"));
-
-        Request request = new Request.Builder()
-                .url(apiUrl)
-                .post(body)
-                .addHeader("Authorization", "Bearer " + apiKey)
-                .addHeader("Content-Type", "application/json")
-                .build();
-
-        Response response = client.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new IOException("Unexpected code " + response);
-        }
-
-        String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
-        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-
-        if (jsonObject.has("choices") && !jsonObject.get("choices").isJsonNull()) {
-            JsonArray choicesArray = jsonObject.get("choices").getAsJsonArray();
-            
-            if (choicesArray.size() > 0) {
-                JsonObject messageObject = choicesArray.get(0).getAsJsonObject().get("message").getAsJsonObject();
-                if (messageObject != null && messageObject.has("content")) {
-                    return messageObject.get("content").getAsString();
-                }
-            }
-        }
-
-        throw new IOException("Invalid response from the API");
-
+    // this is to retrieve the api key // new code
+    @PostConstruct
+    public void init() {
+        openAIClient = SimpleOpenAI.builder().apiKey(apiKey).build();
     }
+    
+    // Transcribe Function with Assistant API // new code
+    public String transcribeTextToEmotion(String text, String assistantId) {
+        // Create a new thread
+        var thread = openAIClient.threads().create(ThreadRequest.builder().build()).join();
+        var threadId = thread.getId();
+
+        // Add the user message to the thread
+        openAIClient.threadMessages()
+                .create(threadId, ThreadMessageRequest.builder()
+                        .role(ThreadMessageRole.USER)
+                        .content(text)
+                        .build())
+                .join();
+
+        // Create and run the thread
+        var threadRun = openAIClient.threadRuns()
+                .createAndPoll(threadId, ThreadRunRequest.builder()
+                        .assistantId(assistantId)
+                        .build());
+
+        // Handle the thread run response
+        return handleRun(threadRun, threadId);
+    }
+
+    // new code
+    private String handleRun(ThreadRun threadRun, String threadId) {
+        StringBuilder responseContent = new StringBuilder();
+
+        if (threadRun.getStatus().equals(ThreadRun.RunStatus.REQUIRES_ACTION)) {
+            var toolCalls = threadRun.getRequiredAction().getSubmitToolOutputs().getToolCalls();
+            var toolOutputs = functionExecutor.executeAll(toolCalls,
+                    (toolCallId, result) -> ToolOutput.builder()
+                            .toolCallId(toolCallId)
+                            .output(result)
+                            .build());
+            var runSubmitTool = openAIClient.threadRuns()
+                    .submitToolOutputAndPoll(threadId, threadRun.getId(), ThreadRunSubmitOutputRequest.builder()
+                            .toolOutputs(toolOutputs)
+                            .build());
+            responseContent.append(handleRun(runSubmitTool, threadId));
+        } else {
+            var threadMessages = openAIClient.threadMessages().getList(threadId).join();
+            var answer = threadMessages.stream()
+                    .filter(msg -> msg.getRole().equals(ThreadMessageRole.ASSISTANT))
+                    .flatMap(msg -> msg.getContent().stream())
+                    .filter(contentPart -> contentPart instanceof ContentPart.ContentPartTextAnnotation)
+                    .map(contentPart -> (ContentPart.ContentPartTextAnnotation) contentPart)
+                    .map(contentPartTextAnnotation -> contentPartTextAnnotation.getText().getValue())
+                    .collect(Collectors.joining("\n"));
+            // System.out.println(answer.getClass());
+            responseContent.append(answer);
+        }
+
+        return responseContent.toString().trim();
+    }
+
+    // analyzeEmotion Function // new code
+    public String analyzeEmotion(String text) throws IOException {
+        return transcribeTextToEmotion(text, "asst_cp386dW1y0ZPURztEfWkDf1W");
+    }
+
+    // public String analyzeEmotion(String text) throws IOException {
+
+    //     OkHttpClient client = new OkHttpClient();
+
+    //     // Creating Json Objects for System and User
+    //     String prompt = "###Instruction###\n" +
+    //         "You will be provided a text. Your task is to analyze the provided text to determine the emotion(s) it conveys from the provided list. Assess not only individual sentences but also consider the overall context and emotional flow of the entire text.\n" +
+    //         "\n" +
+    //         "###Emotions List###\n" +
+    //         "\"Joy, Happiness, Sadness, Anger, Fear, Surprise, Disgust, Contempt, Love, Trust, Anticipation, Guilt, Shame, Excitement, Gratitude, Envy, Jealousy, Empathy, Compassion, Pride, Hope, Confusion, Regret, Loneliness, Boredom, Satisfaction, Anxiety\"\n" +
+    //         "\n" +
+    //         "###Steps###\n" +
+    //         "1. **Identify the Suitable Emotion(s):** For each sentence and for the overall text, identify the emotion(s) expressed.\n" +
+    //         "2. **Assess Emotional Intensity:** Determine the emotional intensity (High, Medium, Low) for each detected emotion.\n" +
+    //         "   - *Define Criteria*: Provide specific linguistic or contextual cues to classify intensity levels.\n" +
+    //         "3. **Determine Sentiment:** Indicate the sentiment as \"Positive,\" \"Neutral,\" or \"Negative\" for each emotion.\n" +
+    //         "4. **Calculate Weight:** Assign a weight to each detected emotion relative to the entire text, based on the proportion of emotional words or intensity levels contributing to that emotion.\n" +
+    //         "   - *Normalization*: Ensure that the sum of weights across all emotions equals 100%.\n" +
+    //         "5. **Consider Emotional Flow:** Analyze how emotions develop or change throughout the text, noting any overarching themes or shifts.\n" +
+    //         "6. **Address Mixed Sentiments and Subtleties:** Evaluate and note any mixed sentiments, such as bittersweet or melancholic expressions, and consider subtleties like sarcasm or irony.\n" +
+    //         "\n" +
+    //         "###Output Template###\n" +
+    //         "```\n" +
+    //         "Annotated Text: {}\n" +
+    //         "Detected Emotion(s): x (a%), y (b%), z (c%)\n" +
+    //         "Overall Emotional Intensity: {majority intensity}\n" +
+    //         "Overall Sentiment: {majority sentiment} (i% Positive, j% Neutral, k% Negative)\n" +
+    //         "Explanation: Additional observations on emotional flow, mixed sentiments, or linguistic subtleties.\n" +
+    //         "```\n" +
+    //         "\n" +
+    //         "###Example###\n" +
+    //         "Text: \"I felt great joy when I received the news, but also a tinge of sadness.\"\n" +
+    //         "\n" +
+    //         "Annotated Text: I felt great joy when I received the news(Joy, High, Positive, 70%), but also a tinge of sadness. (Sadness, Low, Negative, 30%)\n" +
+    //         "Detected Emotion(s): Joy (70%), Sadness (30%)\n" +
+    //         "Overall Emotional Intensity: High\n" +
+    //         "Overall Sentiment: Positive (70% Positive, 0% Neutral, 30% Negative)\n" +
+    //         "Explanation: The joy overwhelms the sadness in emotional contribution, highlighting a predominantly positive reaction with a minor negative undertone.\n";
+
+    //     // System JsonObject
+    //     JsonObject systemMessage = new JsonObject();
+    //     systemMessage.addProperty("role", "system");
+    //     systemMessage.addProperty("content", prompt);
+
+    //     // User JsonObject
+    //     JsonObject userMessage = new JsonObject();
+    //     userMessage.addProperty("role", "user");
+    //     userMessage.addProperty("content", text);
+
+    //     JsonArray messages = new JsonArray();
+    //     messages.add(systemMessage);
+    //     messages.add(userMessage);
+
+    //     JsonObject requestBodyJson = new JsonObject();
+    //     // requestBodyJson.addProperty("model", "gpt-3.5-turbo-0125"); // using default gpt-3.5 model
+    //     // requestBodyJson.addProperty("model", "ft:gpt-3.5-turbo-0125:personal::9jACErVy"); // using fine tuned model
+    //     requestBodyJson.addProperty("model", "gpt-4o"); // using gpt-4o model
+    //     requestBodyJson.add("messages", messages);
+
+    //     RequestBody body = RequestBody.create(requestBodyJson.toString(), MediaType.parse("application/json"));
+
+    //     Request request = new Request.Builder()
+    //             .url(apiUrl)
+    //             .post(body)
+    //             .addHeader("Authorization", "Bearer " + apiKey)
+    //             .addHeader("Content-Type", "application/json")
+    //             .build();
+
+    //     Response response = client.newCall(request).execute();
+    //     if (!response.isSuccessful()) {
+    //         throw new IOException("Unexpected code " + response);
+    //     }
+
+    //     String responseBody = IOUtils.toString(response.body().byteStream(), "UTF-8");
+    //     JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+
+    //     if (jsonObject.has("choices") && !jsonObject.get("choices").isJsonNull()) {
+    //         JsonArray choicesArray = jsonObject.get("choices").getAsJsonArray();
+            
+    //         if (choicesArray.size() > 0) {
+    //             JsonObject messageObject = choicesArray.get(0).getAsJsonObject().get("message").getAsJsonObject();
+    //             if (messageObject != null && messageObject.has("content")) {
+    //                 return messageObject.get("content").getAsString();
+    //             }
+    //         }
+    //     }
+
+    //     throw new IOException("Invalid response from the API");
+
+    // }
 
 }
