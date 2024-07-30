@@ -32,6 +32,8 @@ import jakarta.annotation.PostConstruct;
 
 // import org.apache.commons.io.IOUtils;
 
+// jame's account's userId: 34d8b4c8-9061-7075-e98d-3173bb8c43a1
+
 @Service
 public class TranscribeService {
 
