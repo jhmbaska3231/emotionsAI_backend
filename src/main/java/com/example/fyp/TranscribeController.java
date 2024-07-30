@@ -1,6 +1,7 @@
 package com.example.fyp;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +16,17 @@ public class TranscribeController {
     @Autowired
     private TranscribeService transcribeService;
 
+    // @PostMapping("/transcribe")
+    // public String analyzeEmotion(@RequestBody String inputText) throws IOException {
+    //     return transcribeService.analyzeEmotion(inputText);
+    // }
+
+    // new code
     @PostMapping("/transcribe")
-    public String analyzeEmotion(@RequestBody String inputText) throws IOException {
-        return transcribeService.analyzeEmotion(inputText);
+    public String analyzeEmotion(@RequestBody Map<String, String> payload) throws IOException {
+        String userId = payload.get("userId");
+        String inputText = payload.get("inputText");
+        return transcribeService.analyzeEmotion(userId, inputText);
     }
     
 }

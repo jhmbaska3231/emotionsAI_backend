@@ -1,6 +1,8 @@
 package com.example.fyp;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +44,12 @@ public class TranscribeService {
     // private SimpleOpenAI openAIClient = SimpleOpenAI.builder().apiKey(apiKey).build(); // new code
     private FunctionExecutor functionExecutor; // Ensure this is initialized with your functions // new code
 
+    private final DiaryService diaryService;
+
+    public TranscribeService(DiaryService diaryService) {
+        this.diaryService = diaryService;
+    }
+
     // this is to retrieve the api key // new code
     @PostConstruct
     public void init() {
@@ -49,12 +57,32 @@ public class TranscribeService {
     }
     
     // Transcribe Function with Assistant API // new code
-    public String transcribeTextToEmotion(String text, String assistantId) {
-        // Create a new thread
+    public String transcribeTextToEmotion(String userId, String text, String assistantId) {
+        // Step 1: Retrieve current month
+        int currentMonth = LocalDateTime.now().getMonthValue();
+
+        // Step 2: Retrieve user's diary entries
+        List<DiaryWithTargetEmotionsDTO> diaryEntries = diaryService.allDiariesWithTargetEmotionsByMonthAndUserId(userId, currentMonth);
+
+        // Step 3: Upload diary entries to an Assistant thread
         var thread = openAIClient.threads().create(ThreadRequest.builder().build()).join();
         var threadId = thread.getId();
 
-        // Add the user message to the thread
+        for (DiaryWithTargetEmotionsDTO entry : diaryEntries) {
+            String diaryContent = entry.getInputText();
+
+            System.out.println("Diary Content: " + diaryContent);
+            System.out.println("Diary Entry: " + entry.toString());
+
+            openAIClient.threadMessages()
+                    .create(threadId, ThreadMessageRequest.builder()
+                            .role(ThreadMessageRole.USER)
+                            .content(diaryContent)
+                            .build())
+                    .join();
+        }
+
+        // Step 4: Submit input text to assistant
         openAIClient.threadMessages()
                 .create(threadId, ThreadMessageRequest.builder()
                         .role(ThreadMessageRole.USER)
@@ -62,13 +90,12 @@ public class TranscribeService {
                         .build())
                 .join();
 
-        // Create and run the thread
+        // Step 5: Assistant analyzes previous diary entries then emotion analyzes the input text
         var threadRun = openAIClient.threadRuns()
                 .createAndPoll(threadId, ThreadRunRequest.builder()
                         .assistantId(assistantId)
                         .build());
 
-        // Handle the thread run response
         return handleRun(threadRun, threadId);
     }
 
@@ -105,8 +132,8 @@ public class TranscribeService {
     }
 
     // analyzeEmotion Function // new code
-    public String analyzeEmotion(String text) throws IOException {
-        return transcribeTextToEmotion(text, "asst_cp386dW1y0ZPURztEfWkDf1W");
+    public String analyzeEmotion(String userId, String text) throws IOException {
+        return transcribeTextToEmotion(userId, text, "asst_cp386dW1y0ZPURztEfWkDf1W");
     }
 
     // public String analyzeEmotion(String text) throws IOException {
