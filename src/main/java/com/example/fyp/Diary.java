@@ -47,6 +47,10 @@ public class Diary {
     @Column(name = "overall_sentiment")
     private String overallSentiment;
 
+    @Lob
+    @Column(name = "explanation", columnDefinition = "TEXT")
+    private String explanation;
+
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL) // mapped to diary attribute in TargetEmotion class
     @JsonIgnore // to prevent infinite relationship loop
     private List<TargetEmotion> targetEmotionsList;

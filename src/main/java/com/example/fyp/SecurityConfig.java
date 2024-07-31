@@ -9,6 +9,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.ProviderManager;
@@ -34,7 +35,7 @@ public class SecurityConfig {
     @Value("${cognito.userPoolId}")
     private String userPoolId;
 
-    // working for but single tenant/issuer only
+    // working but for single tenant/issuer only
     // @Bean
     // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     //     http
@@ -58,8 +59,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("Admin")
                 .requestMatchers("/api/lambda/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/forms").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/forms").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/forms/*/read").authenticated()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2

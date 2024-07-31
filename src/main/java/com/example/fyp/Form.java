@@ -46,6 +46,6 @@ public class Form {
     private String message;
 
     @Column(name = "read_status")
-    private boolean readStatus;
+    private boolean readStatus = false;
     
 }
