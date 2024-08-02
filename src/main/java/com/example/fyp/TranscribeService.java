@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 // import com.google.gson.JsonArray;
 // import com.google.gson.JsonObject;
 // import com.google.gson.JsonParser;
-
 import io.github.sashirestela.openai.SimpleOpenAI;
 import io.github.sashirestela.openai.common.content.ContentPart;
 import io.github.sashirestela.openai.common.function.FunctionExecutor;
@@ -57,42 +56,53 @@ public class TranscribeService {
     public void init() {
         openAIClient = SimpleOpenAI.builder().apiKey(apiKey).build();
     }
+
+    public String transcribeTextToEmotion(String userId, String text, String assistantId) {
+        // System.out.println("Step 1");
+        // Retrieve user's diary entries
+        List<DiaryWithTargetEmotionsDTO> diaryEntries = diaryService.allDiariesWithTargetEmotionsByMonthAndUserId(userId, LocalDateTime.now().getMonthValue());
+    
+        // Check if there are no diary entries
+        if (diaryEntries.isEmpty()) {
+            System.out.println("No diary entries found for user: " + userId);
+            return transcribeTextWithAssistant(userId, text, assistantId, "No Context Present");
+        }
+    
+        // Prepare the context string
+        StringBuilder contextBuilder = new StringBuilder();
+        for (DiaryWithTargetEmotionsDTO entry : diaryEntries) {
+            System.out.println("\nDiary Content: " + entry.getInputText());
+            System.out.println("\nDiary Entry: " + entry.toString());
+            contextBuilder.append(entry.toString()).append("\n\n");
+        }
+        String context = contextBuilder.toString();
+    
+        return transcribeTextWithAssistant(userId, text, assistantId, context);
+    }
     
     // Transcribe Function with Assistant API // new code
-    public String transcribeTextToEmotion(String userId, String text, String assistantId) {
-        // Step 1: Retrieve current month
-        int currentMonth = LocalDateTime.now().getMonthValue();
+    public String transcribeTextWithAssistant(String userId, String text, String assistantId, String context) {
 
-        // Step 2: Retrieve user's diary entries
-        List<DiaryWithTargetEmotionsDTO> diaryEntries = diaryService.allDiariesWithTargetEmotionsByMonthAndUserId(userId, currentMonth);
-
-        // Step 3: Upload diary entries to an Assistant thread
+        // Step 2: Upload diary entries to an Assistant thread
+        // System.out.println("Step 2");
         var thread = openAIClient.threads().create(ThreadRequest.builder().build()).join();
         var threadId = thread.getId();
 
-        for (DiaryWithTargetEmotionsDTO entry : diaryEntries) {
-            String diaryContent = entry.getInputText();
-
-            System.out.println("Diary Content: " + diaryContent);
-            System.out.println("Diary Entry: " + entry.toString());
-
-            openAIClient.threadMessages()
-                    .create(threadId, ThreadMessageRequest.builder()
-                            .role(ThreadMessageRole.USER)
-                            .content(diaryContent)
-                            .build())
-                    .join();
-        }
-
-        // Step 4: Submit input text to assistant
+        // Step 3: Add the context and user input as a single message
+        // System.out.println("Step 3");
+        String combinedMessage = "### User Context ###\n" + context + "\n\n### Analyze the following text ###\n" + text;
+        
+        // Step 4: Submit input text with context
+        // System.out.println("Step 4");
         openAIClient.threadMessages()
                 .create(threadId, ThreadMessageRequest.builder()
                         .role(ThreadMessageRole.USER)
-                        .content(text)
+                        .content(combinedMessage)
                         .build())
                 .join();
 
-        // Step 5: Assistant analyzes previous diary entries then emotion analyzes the input text
+        // Step 5: Run the thread
+        // System.out.println("Step 5");
         var threadRun = openAIClient.threadRuns()
                 .createAndPoll(threadId, ThreadRunRequest.builder()
                         .assistantId(assistantId)
