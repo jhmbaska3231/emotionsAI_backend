@@ -32,8 +32,6 @@ import jakarta.annotation.PostConstruct;
 
 // import org.apache.commons.io.IOUtils;
 
-// jame's account's userId: 34d8b4c8-9061-7075-e98d-3173bb8c43a1
-
 @Service
 public class TranscribeService {
 
@@ -43,8 +41,7 @@ public class TranscribeService {
     // private static final String apiUrl = "https://api.openai.com/v1/chat/completions";
 
     private SimpleOpenAI openAIClient; // new code
-    // private SimpleOpenAI openAIClient = SimpleOpenAI.builder().apiKey(apiKey).build(); // new code
-    private FunctionExecutor functionExecutor; // Ensure this is initialized with your functions // new code
+    private FunctionExecutor functionExecutor; // new code
 
     private final DiaryService diaryService;
 
@@ -52,7 +49,7 @@ public class TranscribeService {
         this.diaryService = diaryService;
     }
 
-    // this is to retrieve the api key // new code
+    // this is to retrieve the api key
     @PostConstruct
     public void init() {
         openAIClient = SimpleOpenAI.builder().apiKey(apiKey).build();
@@ -60,39 +57,53 @@ public class TranscribeService {
     
     // Transcribe Function with Assistant API // new code
     public String transcribeTextToEmotion(String userId, String text, String assistantId) {
-        // Step 1: Retrieve current month
+        // Retrieve current month
         int currentMonth = LocalDateTime.now().getMonthValue();
 
-        // Step 2: Retrieve user's diary entries
+        // Retrieve user's diary entries
         List<DiaryWithTargetEmotionsDTO> diaryEntries = diaryService.allDiariesWithTargetEmotionsByMonthAndUserId(userId, currentMonth);
 
-        // Step 3: Upload diary entries to an Assistant thread
+        // Check if there are no diary entries
+        if (diaryEntries.isEmpty()) {
+            // System.out.println("No diary entries found for user: " + userId);
+            return transcribeTextWithAssistant(userId, text, assistantId, "No Context Present");
+        }
+
+        // Prepare the context string
+        StringBuilder contextBuilder = new StringBuilder();
+        for (DiaryWithTargetEmotionsDTO entry : diaryEntries) {
+            // System.out.println("\nDiary Content: " + entry.getInputText());
+            // System.out.println("\nDiary Entry: " + entry.toString());
+            contextBuilder.append(entry.toString()).append("\n\n");
+        }
+        String context = contextBuilder.toString();
+
+        return transcribeTextWithAssistant(userId, text, assistantId, context);
+    }
+
+    // Transcribe Function with Assistant API // new code
+    public String transcribeTextWithAssistant(String userId, String text, String assistantId, String context) {
+
+        // Step 2: Upload diary entries to an Assistant thread
+        // System.out.println("Step 2");
         var thread = openAIClient.threads().create(ThreadRequest.builder().build()).join();
         var threadId = thread.getId();
 
-        for (DiaryWithTargetEmotionsDTO entry : diaryEntries) {
-            String diaryContent = entry.getInputText();
-
-            System.out.println("Diary Content: " + diaryContent);
-            System.out.println("Diary Entry: " + entry.toString());
-
-            openAIClient.threadMessages()
-                    .create(threadId, ThreadMessageRequest.builder()
-                            .role(ThreadMessageRole.USER)
-                            .content(diaryContent)
-                            .build())
-                    .join();
-        }
-
-        // Step 4: Submit input text to assistant
+        // Step 3: Add the context and user input as a single message
+        // System.out.println("Step 3");
+        String combinedMessage = "### User Context ###\n" + context + "\n\n### Analyze the following text ###\n" + text;
+        
+        // Step 4: Submit input text with context
+        // System.out.println("Step 4");
         openAIClient.threadMessages()
                 .create(threadId, ThreadMessageRequest.builder()
                         .role(ThreadMessageRole.USER)
-                        .content(text)
+                        .content(combinedMessage)
                         .build())
                 .join();
 
-        // Step 5: Assistant analyzes previous diary entries then emotion analyzes the input text
+        // Step 5: Run the thread
+        // System.out.println("Step 5");
         var threadRun = openAIClient.threadRuns()
                 .createAndPoll(threadId, ThreadRunRequest.builder()
                         .assistantId(assistantId)

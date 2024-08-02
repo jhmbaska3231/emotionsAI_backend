@@ -22,8 +22,10 @@ public class FypApplication {
     //         // Get TranscribeService bean from application context
     //         TranscribeService transcribeService = ctx.getBean(TranscribeService.class);
     //         try {
-    //             String inputText = "today ah i kenna the rain sia... then i missed the bus lor...";
-    //             String output = transcribeService.analyzeEmotion(inputText);
+    //             String inputText = "annoyed";
+    //             String userId = "34d8b4c8-9061-7075-e98d-3173bb8c43a1"; // james user_id            
+    //             System.out.println("Step 0");
+    //             String output = transcribeService.analyzeEmotion(userId, inputText);
     //             System.out.println(output);
     //         } catch (Exception io) {
     //             System.out.println(io);
