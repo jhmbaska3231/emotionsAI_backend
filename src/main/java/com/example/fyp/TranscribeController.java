@@ -21,7 +21,7 @@ public class TranscribeController {
     //     return transcribeService.analyzeEmotion(inputText);
     // }
 
-    // new code
+    // new analyzeEmotion to take in userId for diary context
     @PostMapping("/transcribe")
     public String analyzeEmotion(@RequestBody Map<String, String> payload) throws IOException {
         String userId = payload.get("userId");
