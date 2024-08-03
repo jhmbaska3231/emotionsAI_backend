@@ -22,7 +22,7 @@ public class FypApplication {
     //         // Get TranscribeService bean from application context
     //         TranscribeService transcribeService = ctx.getBean(TranscribeService.class);
     //         try {
-    //             String inputText = "annoyed";
+    //             String inputText = "feels surreal, i didnt expect singapore to be independant...";
     //             String userId = "34d8b4c8-9061-7075-e98d-3173bb8c43a1"; // james user_id            
     //             System.out.println("Step 0");
     //             String output = transcribeService.analyzeEmotion(userId, inputText);
