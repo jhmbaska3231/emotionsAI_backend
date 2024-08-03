@@ -104,17 +104,19 @@ public class UserService {
         return new TranscribeUsageDTO(transcribeCount, hasReachedLimit);
     }
 
-    private boolean checkIfReachedLimit(FreeUser user) {
+    private void resetTranscribeCountIfNecessary(FreeUser user) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime lastTranscribeTime = user.getLastTranscribeTime();
-        boolean isWithin24Hours = lastTranscribeTime != null && 
-                                  lastTranscribeTime.plusHours(24).isAfter(now);
-
-        if (isWithin24Hours) {
-            return user.getTranscribeCount() >= 3;
-        } else {
-            return false;
+        if (lastTranscribeTime != null && lastTranscribeTime.plusHours(24).isBefore(now)) {
+            user.setTranscribeCount(0);
+            user.setLastTranscribeTime(null);
+            userRepository.save(user);
         }
+    }
+
+    private boolean checkIfReachedLimit(FreeUser user) {
+        resetTranscribeCountIfNecessary(user);
+        return user.getTranscribeCount() >= 3;
     }
 
     public void updateTranscribeLimit(String userId, LocalDateTime transcribeTime) {
