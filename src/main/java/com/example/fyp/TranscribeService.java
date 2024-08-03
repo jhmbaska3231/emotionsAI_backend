@@ -103,7 +103,7 @@ public class TranscribeService {
         // Combine user context with general context
         String combinedContext = "### General Context ###\n" + generalContext + "\n\n### User Context ###\n" + context;
     
-        return transcribeTextWithAssistant(userId, text, assistantId, context);
+        return transcribeTextWithAssistant(userId, text, assistantId, combinedContext);
     }
     
     // Transcribe Function with Assistant API // new code
