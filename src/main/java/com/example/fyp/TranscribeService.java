@@ -71,24 +71,25 @@ public class TranscribeService {
 
         // General context for the current month
         String generalContext = GENERAL_CONTEXTS.get(LocalDateTime.now().getMonth());
+        String userContext;
 
         // Check if there are no diary entries
         if (diaryEntries.isEmpty()) {
             // System.out.println("No diary entries found for user: " + userId);
-            return transcribeTextWithAssistant(userId, text, assistantId, "No Context Present");
-        }
-
-        // Prepare the context string
-        StringBuilder contextBuilder = new StringBuilder();
-        for (DiaryWithTargetEmotionsDTO entry : diaryEntries) {
-            // System.out.println("\nDiary Content: " + entry.getInputText());
-            // System.out.println("\nDiary Entry: " + entry.toString());
-            contextBuilder.append(entry.toString()).append("\n\n");
-        }
-        String context = contextBuilder.toString();
+            userContext = "No User Context Available";
+        } else {
+            // Prepare the context string
+            StringBuilder contextBuilder = new StringBuilder();
+            for (DiaryWithTargetEmotionsDTO entry : diaryEntries) {
+                // System.out.println("\nDiary Content: " + entry.getInputText());
+                // System.out.println("\nDiary Entry: " + entry.toString());
+                contextBuilder.append(entry.toString()).append("\n\n");
+            }
+            userContext = contextBuilder.toString();
+        }  
 
         // Combine user context with general context
-        String combinedContext = "### General Context ###\n" + generalContext + "\n\n### User Context ###\n" + context;
+        String combinedContext = "### General Context ###\n" + generalContext + "\n\n### User Context ###\n" + userContext;
 
         return transcribeTextWithAssistant(userId, text, assistantId, combinedContext);
     }
