@@ -2,6 +2,9 @@ package com.example.fyp;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,23 @@ public class TranscribeService {
 
     private final DiaryService diaryService;
 
+    // General context based on Singapore's calendar of holidays
+    private static final Map<Month, String> GENERAL_CONTEXTS = new HashMap<>();
+    static {
+        GENERAL_CONTEXTS.put(Month.JANUARY, "New Year's Day and preparation for Chinese New Year.");
+        GENERAL_CONTEXTS.put(Month.FEBRUARY, "Chinese New Year celebrations.");
+        GENERAL_CONTEXTS.put(Month.MARCH, "No major holidays.");
+        GENERAL_CONTEXTS.put(Month.APRIL, "Good Friday and preparation for Hari Raya Puasa.");
+        GENERAL_CONTEXTS.put(Month.MAY, "Labour Day and Hari Raya Puasa celebrations.");
+        GENERAL_CONTEXTS.put(Month.JUNE, "Vesak Day and school holidays.");
+        GENERAL_CONTEXTS.put(Month.JULY, "No major holidays.");
+        GENERAL_CONTEXTS.put(Month.AUGUST, "National Day and celebrations of Singapore's independence.");
+        GENERAL_CONTEXTS.put(Month.SEPTEMBER, "Mid-Autumn Festival preparations.");
+        GENERAL_CONTEXTS.put(Month.OCTOBER, "Children's Day and preparations for Deepavali.");
+        GENERAL_CONTEXTS.put(Month.NOVEMBER, "Deepavali celebrations.");
+        GENERAL_CONTEXTS.put(Month.DECEMBER, "Christmas and year-end festivities.");
+    }
+
     public TranscribeService(DiaryService diaryService) {
         this.diaryService = diaryService;
     }
@@ -62,6 +82,9 @@ public class TranscribeService {
         // Retrieve user's diary entries
         List<DiaryWithTargetEmotionsDTO> diaryEntries = diaryService.allDiariesWithTargetEmotionsByMonthAndUserId(userId, LocalDateTime.now().getMonthValue());
     
+        // General context for the current month
+        String generalContext = GENERAL_CONTEXTS.get(LocalDateTime.now().getMonth());
+
         // Check if there are no diary entries
         if (diaryEntries.isEmpty()) {
             System.out.println("No diary entries found for user: " + userId);
@@ -76,6 +99,9 @@ public class TranscribeService {
             contextBuilder.append(entry.toString()).append("\n\n");
         }
         String context = contextBuilder.toString();
+
+        // Combine user context with general context
+        String combinedContext = "### General Context ###\n" + generalContext + "\n\n### User Context ###\n" + context;
     
         return transcribeTextWithAssistant(userId, text, assistantId, context);
     }
@@ -90,7 +116,7 @@ public class TranscribeService {
 
         // Step 3: Add the context and user input as a single message
         // System.out.println("Step 3");
-        String combinedMessage = "### User Context ###\n" + context + "\n\n### Analyze the following text ###\n" + text;
+        String combinedMessage = context + "\n\n### Analyze the following text ###\n" + text;
         
         // Step 4: Submit input text with context
         // System.out.println("Step 4");
