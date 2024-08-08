@@ -44,20 +44,20 @@ public class TranscribeService {
         openAIClient = SimpleOpenAI.builder().apiKey(apiKey).build();
     }
 
-    // General context based on Singapore's calendar of holidays
+    // General context based on Singapore's 2024 calendar of holidays
     private static final Map<Month, String> GENERAL_CONTEXTS = new HashMap<>();
     static {
         GENERAL_CONTEXTS.put(Month.JANUARY, "New Year's Day and preparation for Chinese New Year.");
         GENERAL_CONTEXTS.put(Month.FEBRUARY, "Chinese New Year celebrations.");
-        GENERAL_CONTEXTS.put(Month.MARCH, "No major holidays.");
-        GENERAL_CONTEXTS.put(Month.APRIL, "Good Friday and preparation for Hari Raya Puasa.");
-        GENERAL_CONTEXTS.put(Month.MAY, "Labour Day and Hari Raya Puasa celebrations.");
-        GENERAL_CONTEXTS.put(Month.JUNE, "Vesak Day and school holidays.");
+        GENERAL_CONTEXTS.put(Month.MARCH, "Good Friday.");
+        GENERAL_CONTEXTS.put(Month.APRIL, "Hari Raya Puasa.");
+        GENERAL_CONTEXTS.put(Month.MAY, "Labour Day and Vesak Day celebrations.");
+        GENERAL_CONTEXTS.put(Month.JUNE, "Hari Raya Haji");
         GENERAL_CONTEXTS.put(Month.JULY, "No major holidays.");
         GENERAL_CONTEXTS.put(Month.AUGUST, "National Day and celebrations of Singapore's independence.");
-        GENERAL_CONTEXTS.put(Month.SEPTEMBER, "Mid-Autumn Festival preparations.");
-        GENERAL_CONTEXTS.put(Month.OCTOBER, "Children's Day and preparations for Deepavali.");
-        GENERAL_CONTEXTS.put(Month.NOVEMBER, "Deepavali celebrations.");
+        GENERAL_CONTEXTS.put(Month.SEPTEMBER, "No major holidays.");
+        GENERAL_CONTEXTS.put(Month.OCTOBER, "Deepavali celebrations.");
+        GENERAL_CONTEXTS.put(Month.NOVEMBER, "No major holidays.");
         GENERAL_CONTEXTS.put(Month.DECEMBER, "Christmas and year-end festivities.");
     }
     
